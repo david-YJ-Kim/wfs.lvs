@@ -1,0 +1,85 @@
+
+property:
+  type: dev
+
+server:
+  port: 8080
+  shutdown: graceful
+
+
+logging:
+  level:
+    org:
+      springframework:
+        jdbc:
+          core:
+            JdbcTemplate : debug
+#    '[org.springframework]': debug
+#    '[org.springframework.web]': debug
+
+
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-request-size: 45MB
+      max-file-size: 15MB
+#  datasource:
+#    driver-class-name: oracle.jdbc.OracleDriver
+#    url: jdbc:oracle:thin:@mes-oracle.crhbirj6sm35.ap-northeast-2.rds.amazonaws.com:1522:ORCL
+#    username: mesadm
+#    password: absolics12#
+#
+#  jpa:
+#    properties:
+#      hibernate:
+#        jdbc:
+#          lob:
+#            non_contextual_creation: true
+#          batch_size: 1000
+#    show-sql: true
+#    database-platform: org.hibernate.dialect.OracleDialect
+#  transaction:
+#    mode: jdbc
+
+
+##### Application Config ####
+ap:
+  info:
+    group: FIS
+    site: SVM
+    env: DEV
+    sequence: 1
+  worker:
+    pool-size:
+      core: 5
+      max: 50
+    capacity: 1000
+    name:
+      prefix: LVS-ASYNC-
+  interface:
+    solace:
+      host: 10.184.50.81:55555
+      vpn: MES_QA
+      client:
+        username: default
+        password: admin
+      connect:
+        trial-count: 2
+      reconnect:
+        trial-count: 20
+        per-host: 5
+    destination:
+      send:
+        topic:
+      receive:
+        topic: SVM/WFS/LOG/MON
+        queue:
+        init:
+  shutdown:
+    force:
+      timeout:
+        ms: 1000
+    polling:
+      interval:
+        ms: 10

@@ -1,0 +1,27 @@
+### GET EQP List
+GET http://localhost:9010/lvs/get/eqpList
+Accept: application/json
+
+### GET EQP detail
+GET http://localhost:9010/lvs/get/scenario/AP-RD-03-01
+Accept: application/json
+
+
+
+
+### GET All Logs
+GET http://localhost:9010/lvs/get/allLogs
+Accept: application/json
+
+### GET Detail Log
+GET http://localhost:9010/lvs/get/logs/1707443599916-a70ee032-1d39-4e9c-9648-6d6d1ea1104a
+Accept: application/json
+
+### POST Request File read
+POST http://localhost:8080/lvs/file/read
+Content-Type: application/json
+
+{
+"path": "C:\\Users\\DavidKim\\OneDrive - Absolics Inc\\Documents\\Documentation\\운영\\테스트\\설비연동테스트_202401\\AT-05-01\\2차_20240215",
+"name": "bwappnode.log"
+}
