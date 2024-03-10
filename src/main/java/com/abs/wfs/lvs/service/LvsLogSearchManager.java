@@ -1,7 +1,8 @@
 package com.abs.wfs.lvs.service;
 
 import com.abs.wfs.lvs.util.LvsDataStore;
-import com.abs.wfs.lvs.util.vo.EventLogsVo;
+import com.abs.wfs.lvs.util.vo.EventLogVo;
+import com.abs.wfs.lvs.util.vo.EventStreamVo;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,10 +15,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class LvsLogSearchManager {
 
-    ConcurrentHashMap<String, EventLogsVo> logMap = LvsDataStore.getInstance().getLogMessageMap();
+    ConcurrentHashMap<String, ArrayList<EventLogVo>> logMap = LvsDataStore.getInstance().getLogMessageMap();
 
     // eqp,
-    ConcurrentHashMap<String, ArrayList<String>> scenarioMap = LvsDataStore.getInstance().getScenarioOngoingEqpMap();
+    ConcurrentHashMap<String, ArrayList<EventStreamVo>> scenarioMap = LvsDataStore.getInstance().getScenarioOngoingEqpMap();
 
     public String printLogMap(){
 
@@ -29,7 +30,7 @@ public class LvsLogSearchManager {
         return LvsDataStore.getInstance().getLogMessageMap().toString();
     }
 
-    public EventLogsVo getEventFlow(String messageKey){
+    public ArrayList<EventLogVo> getEventFlow(String messageKey){
 
         if(this.logMap.containsKey(messageKey)){
 
@@ -38,22 +39,22 @@ public class LvsLogSearchManager {
         return null;
     }
 
-    public JSONArray getEqpFlow(String eqpId){
-
-
-        ArrayList<String> eventList = LvsDataStore.getInstance().getScenarioOngoingEqpMap().get(eqpId);
-        JSONArray jsonArray = new JSONArray();
-        for(String event : eventList){
-            JSONArray jsonVoArray = new JSONArray(LvsDataStore.getInstance().getLogMessageMap().get(event));
-            JSONObject object = new JSONObject();
-            object.put(event, jsonVoArray);
-
-            jsonArray.put(object);
-
-        }
-        return jsonArray;
-
-    }
+//    public JSONArray getEqpFlow(String eqpId){
+//
+//
+//        ArrayList<EventStreamVo> eventList = LvsDataStore.getInstance().getScenarioOngoingEqpMap().get(eqpId);
+//        JSONArray jsonArray = new JSONArray();
+//        for(EventStreamVo event : eventList){
+//            JSONArray jsonVoArray = new JSONArray(LvsDataStore.getInstance().getLogMessageMap().get(event));
+//            JSONObject object = new JSONObject();
+//            object.put(event, jsonVoArray);
+//
+//            jsonArray.put(object);
+//
+//        }
+//        return jsonArray;
+//
+//    }
 
     public ArrayList getEqpIdList(){
 
@@ -78,7 +79,7 @@ public class LvsLogSearchManager {
 
     public void deleteLogByKey(String eqpId, String key){
         if(this.scenarioMap.containsKey(eqpId)){
-            ArrayList<String> keyList = this.scenarioMap.get(eqpId);
+            ArrayList<EventStreamVo> keyList = this.scenarioMap.get(eqpId);
             keyList.remove(key);
         }
 
@@ -90,9 +91,6 @@ public class LvsLogSearchManager {
     public void deleteScenarioByKey(String key){
         if(this.scenarioMap.containsKey(key)){
 
-            for(String logKey : this.scenarioMap.get(key)){
-                this.logMap.remove(logKey);
-            }
             this.scenarioMap.remove(key);
         }
 

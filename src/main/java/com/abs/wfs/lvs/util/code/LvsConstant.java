@@ -32,6 +32,17 @@ public enum LvsConstant {
     fileName,
     fileType,
     filePath,
-    eqpId
+    eqpId,
+
+    logLevel,
+    threadName,
+    timestamp,
+    classTrace,
+    tns,
+    StartElement,
+    message,
+    portId,
+    carrId,
+    messageKey
     ;
 }

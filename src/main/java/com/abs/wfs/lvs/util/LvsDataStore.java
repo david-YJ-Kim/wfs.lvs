@@ -1,8 +1,7 @@
 package com.abs.wfs.lvs.util;
 
-import com.abs.wfs.lvs.util.vo.EventLogsVo;
-import com.abs.wfs.lvs.util.vo.LogMessageVo;
-import com.solacesystems.jcsmp.BytesXMLMessage;
+import com.abs.wfs.lvs.util.vo.EventLogVo;
+import com.abs.wfs.lvs.util.vo.EventStreamVo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -18,10 +17,10 @@ public class LvsDataStore {
     private LvsDataStore(){}
 
     // Key: eqp Id, value: [messageKey-A, messageKey-B] which is represent event name (cid).
-    private ConcurrentHashMap<String, ArrayList<String>> scenarioOngoingEqpMap;
+    private ConcurrentHashMap<String, ArrayList<EventStreamVo>> scenarioOngoingEqpMap;
 
     // key: messageKey-A, value: logs
-    private ConcurrentHashMap<String, EventLogsVo> logMessageMap;
+    private ConcurrentHashMap<String, ArrayList<EventLogVo>> logMessageMap;
 
     public static LvsDataStore getInstance(){
         if(instance == null){
@@ -32,17 +31,17 @@ public class LvsDataStore {
         return instance;
     }
 
-    public ConcurrentHashMap<String, EventLogsVo> getLogMessageMap() {
+    public ConcurrentHashMap<String, ArrayList<EventLogVo>> getLogMessageMap() {
         return logMessageMap;
     }
 
-    public ConcurrentHashMap<String, ArrayList<String>> getScenarioOngoingEqpMap() {
+    public ConcurrentHashMap<String, ArrayList<EventStreamVo>> getScenarioOngoingEqpMap() {
         return scenarioOngoingEqpMap;
     }
 
     private void initDataStore(){
-        instance.logMessageMap = new ConcurrentHashMap<String, EventLogsVo>();
-        instance.scenarioOngoingEqpMap = new ConcurrentHashMap<String, ArrayList<String>>();
+        instance.scenarioOngoingEqpMap = new ConcurrentHashMap<String, ArrayList<EventStreamVo>>();
+        instance.logMessageMap = new ConcurrentHashMap<String, ArrayList<EventLogVo>>();
 
     }
 

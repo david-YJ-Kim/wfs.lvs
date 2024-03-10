@@ -2,14 +2,9 @@ package com.abs.wfs.lvs.intf.solace.broker;
 
 import com.abs.wfs.lvs.service.LvsLogStoreManager;
 import com.abs.wfs.lvs.util.ApplicationContextProvider;
-import com.abs.wfs.lvs.util.LvsDataStore;
 import com.abs.wfs.lvs.util.code.LvsConstant;
-import com.abs.wfs.lvs.util.vo.LogMessageVo;
+import com.abs.wfs.lvs.util.vo.EventLogVo;
 import com.solacesystems.jcsmp.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskRejectedException;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -23,12 +18,12 @@ public class Receiver implements Runnable {
 	private JCSMPSession session;
 	private EndpointProperties endPointProps;
 	private FlowReceiver consumer;
-//	private String module_name;
+	//	private String module_name;
 	private String thread_name;
 	private String topic_name;
 
 	private boolean stopFlagOn = false;
-	
+
 
 	public Receiver(JCSMPSession session, String thread_name, String topic_name) {
 		this.session = session;
@@ -55,10 +50,10 @@ public class Receiver implements Runnable {
 					String payload = "";
 
 					SDTMap userProperty = msg.getProperties();
-					String logLevel = userProperty.getString("logLevel");
-					String threadName = userProperty.getString("threadName");
-					Long timestamp = userProperty.getLong("timestamp");
-					String classTrace = userProperty.getString("classTrace");
+					String logLevel = userProperty.getString(LvsConstant.logLevel.name());
+					String threadName = userProperty.getString(LvsConstant.threadName.name());
+					Long timestamp = userProperty.getLong(LvsConstant.timestamp.name());
+					String classTrace = userProperty.getString(LvsConstant.classTrace.name());
 
 
 					if ( msg instanceof TextMessage) {
@@ -75,7 +70,7 @@ public class Receiver implements Runnable {
 
 					try{
 						int payloadColonIndex = payload.indexOf(":");
-						LogMessageVo vo = LogMessageVo.builder()
+						EventLogVo vo = EventLogVo.builder()
 								.timestamp(timestamp)
 								.logLevel(logLevel)
 								.threadName(threadName)
@@ -139,7 +134,7 @@ public class Receiver implements Runnable {
 
 
 	public boolean stopReceiver() throws JCSMPInterruptedException {
- 
+
 //		this.consumer.stopSync();
 		this.switchStopFlag();
 		this.consumer.stop();

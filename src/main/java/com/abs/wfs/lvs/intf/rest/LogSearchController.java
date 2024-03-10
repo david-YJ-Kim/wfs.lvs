@@ -1,17 +1,15 @@
 package com.abs.wfs.lvs.intf.rest;
 
 import com.abs.wfs.lvs.service.LvsLogSearchManager;
-import com.abs.wfs.lvs.util.vo.EventLogsVo;
-import org.json.JSONArray;
+import com.abs.wfs.lvs.util.vo.EventLogVo;
+import com.abs.wfs.lvs.util.vo.EventStreamVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @CrossOrigin
@@ -29,7 +27,7 @@ public class LogSearchController {
     }
 
     @RequestMapping(value = "/logs/{key}", method = RequestMethod.GET)
-    public EventLogsVo printLogMap(@PathVariable String key) {
+    public ArrayList<EventLogVo> printLogMap(@PathVariable String key) {
 
         return searchManager.getEventFlow(key);
     }
@@ -41,7 +39,7 @@ public class LogSearchController {
         return searchManager.getEqpIdList();
     }
     @RequestMapping(value = "/scenario/{eqpId}", method = RequestMethod.GET)
-    public List<String> getScenarioFlowWithEqpId(@PathVariable String eqpId) {
+    public List<EventStreamVo> getScenarioFlowWithEqpId(@PathVariable String eqpId) {
 
         return searchManager.getScenarioFlowWithEqpId(eqpId);
     }

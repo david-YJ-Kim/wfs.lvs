@@ -1,20 +1,20 @@
 ### GET EQP List
-GET http://localhost:9010/lvs/get/eqpList
+GET http://localhost:8080/lvs/get/eqpList
 Accept: application/json
 
 ### GET EQP detail
-GET http://localhost:9010/lvs/get/scenario/AP-RD-03-01
+GET http://localhost:8080/lvs/get/scenario/AP-RD-04-01
 Accept: application/json
 
 
 
 
 ### GET All Logs
-GET http://localhost:9010/lvs/get/allLogs
+GET http://localhost:8080/lvs/get/allLogs
 Accept: application/json
 
 ### GET Detail Log
-GET http://localhost:9010/lvs/get/logs/1707443599916-a70ee032-1d39-4e9c-9648-6d6d1ea1104a
+GET http://localhost:8080/lvs/get/logs/1710041123544-8599c17d-cc8f-460b-abcd-75e311ba4455
 Accept: application/json
 
 ### POST Request File read
