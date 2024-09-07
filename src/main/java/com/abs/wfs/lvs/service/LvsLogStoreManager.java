@@ -1,5 +1,6 @@
 package com.abs.wfs.lvs.service;
 
+import com.abs.wfs.lvs.dao.domain.lvsEvntReport.vo.WnLvsEventReportDto;
 import com.abs.wfs.lvs.util.CommonDate;
 import com.abs.wfs.lvs.util.LvsDataStore;
 import com.abs.wfs.lvs.util.code.LogNameConstant;
@@ -51,6 +52,8 @@ public class LvsLogStoreManager  {
     public void execute(EventLogVo vo){
         log.info(vo.toString());
 
+        boolean insertNewRecord = false;
+
         if(this.scenarioCollection == null || this.scenarioCollection == null){
             this.initializeDataStore();
         }
@@ -72,8 +75,9 @@ public class LvsLogStoreManager  {
         /**
          * Set Scenario Key : eqpId
          */
-        if(vo.getLogName().compareTo(LogNameConstant.ScenarioStartLog.name()) == 0 ||
-                vo.getLogName().compareTo(LogNameConstant.RecvPayloadLog.name()) == 0 ){
+        if(vo.getLogName().compareTo(LogNameConstant.ScenarioStartLog) == 0 ||
+                vo.getLogName().compareTo(LogNameConstant.RecvPayloadLog) == 0 ){
+
 
             ArrayList<EventStreamVo> streamVoArrayList = null;
             EventStreamVo eventStreamVo = this.generateEventStreamVo(vo);
@@ -94,6 +98,26 @@ public class LvsLogStoreManager  {
                 log.error("Eqp id is null. EventStreamVo: {}", eventStreamVo.toString());
             }
 
+
+        }
+
+
+        switch (vo.getLogName()){
+            case LogNameConstant.RecvPayloadLog:
+                /**
+                 * RecvPayloadLog 수신 시 → 전문 파싱하여 LVS EVENT REPORT 레코드 생성
+                 */
+                break;
+            case LogNameConstant.ScenarioStartLog:
+                break;
+            case LogNameConstant.EventStartLog:
+                break;
+            case LogNameConstant.EventEndLog:
+                break;
+            case LogNameConstant.ScenarioEndLog:
+                break;
+
+            default:
 
         }
 
