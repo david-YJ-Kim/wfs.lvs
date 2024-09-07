@@ -32,6 +32,7 @@ public class EventStreamVo {
      * 부재 시, "" || null 구분
      */
     private String eqpId;
+    private String lotId;
     private String carrId;
     private String portId;
 

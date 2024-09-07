@@ -22,6 +22,8 @@ public class LvsDataStore {
     // key: messageKey-A, value: logs
     private ConcurrentHashMap<String, ArrayList<EventLogVo>> logMessageMap;
 
+    private ArrayList<String> undefinedArray;
+
     public static LvsDataStore getInstance(){
         if(instance == null){
             instance = new LvsDataStore();
@@ -30,6 +32,8 @@ public class LvsDataStore {
         }
         return instance;
     }
+
+    public ArrayList<String> getUndefinedArray(){return undefinedArray;}
 
     public ConcurrentHashMap<String, ArrayList<EventLogVo>> getLogMessageMap() {
         return logMessageMap;
@@ -42,6 +46,7 @@ public class LvsDataStore {
     private void initDataStore(){
         instance.scenarioOngoingEqpMap = new ConcurrentHashMap<String, ArrayList<EventStreamVo>>();
         instance.logMessageMap = new ConcurrentHashMap<String, ArrayList<EventLogVo>>();
+        instance.undefinedArray = new ArrayList<>();
 
     }
 

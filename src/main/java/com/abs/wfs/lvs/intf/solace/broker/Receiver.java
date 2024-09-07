@@ -62,6 +62,7 @@ public class Receiver implements Runnable {
 						payload = new String( msg.getBytes(), "UTF-8");
 					}
 
+					log.debug(payload);
 
 					if(payload.length() == 0){
 						log.warn("Message has been passed. ClassTrace: {} ", classTrace);
@@ -85,8 +86,15 @@ public class Receiver implements Runnable {
 						if((vo.getMessageKey().length() > 30 && vo.getMessageKey().length() < 60)){
 
 							manager.execute(vo);
+
+						}else{
+
+							manager.undefinedStore(payload);
+
 						}
+
 					}catch (Exception e){
+
 						log.error("payload {}",payload );
 						e.printStackTrace();
 					}

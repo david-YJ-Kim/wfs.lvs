@@ -27,11 +27,20 @@ public class LvsLogStoreManager  {
      */
     ConcurrentHashMap<String, ArrayList<EventStreamVo>> scenarioCollection = null;
     ConcurrentHashMap<String, ArrayList<EventLogVo>> eventStreamCollection = null;
+    ArrayList<String> undefinedArray = null;
 
 
     private void initializeDataStore(){
         this.scenarioCollection = LvsDataStore.getInstance().getScenarioOngoingEqpMap();
         this.eventStreamCollection = LvsDataStore.getInstance().getLogMessageMap();
+        this.undefinedArray = LvsDataStore.getInstance().getUndefinedArray();
+    }
+
+    public void undefinedStore(String logPayload){
+        if(this.undefinedArray == null){
+            this.initializeDataStore();
+        }
+        this.undefinedArray.add(logPayload);
     }
 
     /**
@@ -55,33 +64,36 @@ public class LvsLogStoreManager  {
             logList.add(vo);
             this.eventStreamCollection.put(vo.getMessageKey(), logList);
 
-//            EventStreamVo eventLogCollectionVo = EventStreamVo.builder()
-//                                                .messageKey(vo.getMessageKey())
-//                                                .build();
-//            LvsDataStore.getInstance().getLogMessageMap().put(vo.getMessageKey(), eventLogCollectionVo);
-//            log.info("New messageKey begin");
         }
         log.info("key:{} stored in Log Map. size: {}", vo.getMessageKey(), LvsDataStore.getInstance().getLogMessageMap().size());
-
 
 
 
         /**
          * Set Scenario Key : eqpId
          */
-        if(vo.getLogName().compareTo(LogNameConstant.ScenarioStartLog.name()) == 0){
+        if(vo.getLogName().compareTo(LogNameConstant.ScenarioStartLog.name()) == 0 ||
+                vo.getLogName().compareTo(LogNameConstant.RecvPayloadLog.name()) == 0 ){
 
             ArrayList<EventStreamVo> streamVoArrayList = null;
             EventStreamVo eventStreamVo = this.generateEventStreamVo(vo);
 
-            if(this.scenarioCollection.containsKey(eventStreamVo.getEqpId())){
-                streamVoArrayList = this.scenarioCollection.get(eventStreamVo.getEqpId());
+
+            if(eventStreamVo.getEqpId() != null){
+
+                if(this.scenarioCollection.containsKey(eventStreamVo.getEqpId())){
+                    streamVoArrayList = this.scenarioCollection.get(eventStreamVo.getEqpId());
+
+                }else{
+                    streamVoArrayList = new ArrayList<>();
+                }
+                streamVoArrayList.add(eventStreamVo);
+                this.scenarioCollection.put(eventStreamVo.getEqpId(), streamVoArrayList);
 
             }else{
-                streamVoArrayList = new ArrayList<>();
+                log.error("Eqp id is null. EventStreamVo: {}", eventStreamVo.toString());
             }
-            streamVoArrayList.add(eventStreamVo);
-            this.scenarioCollection.put(eventStreamVo.getEqpId(), streamVoArrayList);
+
 
         }
 
@@ -102,38 +114,39 @@ public class LvsLogStoreManager  {
         String eqpId = null;
         String portId= null;
         String carrId= null;
+        String lotId = null;
 
         JSONObject object = XML.toJSONObject(vo.getPayload());
 
-        for(String key : object.keySet()){
-            if(key.contains(LvsConstant.tns.name()) && key.contains(LvsConstant.StartElement.name())){
-                for(String subKey : object.getJSONObject(key).keySet()){
-                    if(subKey.contains(LvsConstant.cid.name())){
+        try{
 
-                        cid = object.getJSONObject(key).getString(subKey).trim();
-                    }
+            JSONObject payloadObj = object.getJSONObject("JavaToXmlActivityOutput").getJSONObject("RequestVo");
+            JSONObject bodyObject = new JSONObject(payloadObj.getString("Payload")).getJSONObject("body");
 
-                    if(subKey.contains(LvsConstant.message.name()) && !subKey.contains(LvsConstant.messageKey.name())){
-                        JSONObject bodyJson = new JSONObject(object.getJSONObject(key).getString(subKey)).getJSONObject(LvsConstant.body.name());
-                        eqpId = bodyJson.isNull(LvsConstant.eqpId.name()) ? "" : bodyJson.getString(LvsConstant.eqpId.name()).trim();
-                        portId = bodyJson.isNull(LvsConstant.portId.name()) ? "" : bodyJson.getString(LvsConstant.portId.name()).trim();
-                        carrId = bodyJson.isNull(LvsConstant.carrId.name()) ? "" : bodyJson.getString(LvsConstant.carrId.name()).trim();
+            eqpId = bodyObject.isNull(LvsConstant.eqpId.name()) ? "" : bodyObject.getString(LvsConstant.eqpId.name()).trim();
+            portId = bodyObject.isNull(LvsConstant.portId.name()) ? "" : bodyObject.getString(LvsConstant.portId.name()).trim();
+            carrId = bodyObject.isNull(LvsConstant.carrId.name()) ? "" : bodyObject.getString(LvsConstant.carrId.name()).trim();
+            lotId = bodyObject.isNull(LvsConstant.lotId.name()) ? "" : bodyObject.getString(LvsConstant.lotId.name()).trim();
 
-                    }
-                }
-            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
+
+
 
         EventStreamVo eventStreamVo = EventStreamVo.builder()
                 .messageKey(vo.getMessageKey())
                 .cid(cid)
                 .eqpId(eqpId)
+                .lotId(lotId)
                 .carrId(carrId)
                 .portId(portId)
                 .timestamp(vo.getTimestamp())
                 .formattedTime(CommonDate.getTimeUI(vo.getTimestamp()))
                 .logLevel(vo.getLogLevel())
                 .build();
+
         return eventStreamVo;
     }
 

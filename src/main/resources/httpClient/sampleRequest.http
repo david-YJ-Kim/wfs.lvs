@@ -14,7 +14,7 @@ GET http://localhost:8080/lvs/get/allLogs
 Accept: application/json
 
 ### GET Detail Log
-GET http://localhost:8080/lvs/get/logs/1710041123544-8599c17d-cc8f-460b-abcd-75e311ba4455
+GET http://localhost:8080/lvs/get/logs/1717447410030-cdebe024-2a60-4534-b12c-32c09b224792
 Accept: application/json
 
 ### POST Request File read
