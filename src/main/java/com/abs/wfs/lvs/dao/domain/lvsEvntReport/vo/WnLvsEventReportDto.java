@@ -2,6 +2,7 @@ package com.abs.wfs.lvs.dao.domain.lvsEvntReport.vo;
 
 
 import com.abs.wfs.lvs.dao.domain.lvsEvntReport.model.WnLvsEventReport;
+import com.abs.wfs.lvs.util.vo.EventStreamVo;
 import com.abs.wfs.lvs.util.vo.UseStatCd;
 import com.abs.wfs.lvs.util.vo.UseYn;
 import lombok.Builder;
@@ -9,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 
 @NoArgsConstructor
 @Data
@@ -56,6 +58,22 @@ public class WnLvsEventReportDto {
         this.crtDt = crtDt;
         this.mdfyUserId = mdfyUserId;
         this.mdfyDt = mdfyDt;
+    }
+
+
+    public WnLvsEventReportDto(EventStreamVo vo){
+        this.trkId = vo.getMessageKey();
+        this.siteId = vo.getSiteId();
+        this.lotId = vo.getLotId();
+        this.eqpId = vo.getEqpId();
+        this.portId = vo.getPortId();
+        this.carrId = vo.getCarrId();
+        this.evntNm = vo.getCid();
+
+        this.crtUserId = vo.getUserId();
+        this.mdfyUserId = vo.getUserId();
+        this.crtDt = Timestamp.from(Instant.now());
+        this.mdfyDt = Timestamp.from(Instant.now());
     }
 
 
