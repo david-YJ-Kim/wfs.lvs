@@ -1,11 +1,13 @@
 package com.abs.wfs.lvs.util.code;
 
 public class LogNameConstant {
-    public static final String RecvPayloadLog = "RecvPayloadLog";
-    public static final String ScenarioStartLog  = "ScenarioStartLog";
-    public static final String ScenarioEndLog = "ScenarioEndLog";
-    public static final String CathAllLog = "CathAllLog";
-    public static final String EventStartLog = "EventStartLog";
-    public static final String EventEndLog = "EventEndLog";
-    public static final String ProcessEqpIdLog = "ProcessEqpIdLog";
+
+    public final static String RecvPayloadLog = "RecvPayloadLog";
+    public final static String ScenarioStartLog = "ScenarioStartLog";
+    public final static String ScenarioEndLog = "ScenarioEndLog";
+    public final static String CathAllLog = "CathAllLog";
+    public final static String EventStartLog = "EventStartLog";
+    public final static String EventEndLog = "EventEndLog";
+    public final static String ProcessEqpIdLog ="ProcessEqpIdLog";
+    public final static String AbnormalStartLog ="AbnormalStartLog";
 }

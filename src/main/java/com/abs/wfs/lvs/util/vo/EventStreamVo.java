@@ -19,6 +19,9 @@ public class EventStreamVo {
      */
     private String messageKey;
 
+    private String siteId; // TODO siteId 가져오는 로직 추가 필요
+    private String userId; // TODO userId 가져오는 로직 추가 필요
+
     /**
      * 각 이벤트를 의마하는 이벤트명
      */

@@ -1,6 +1,7 @@
 package com.abs.wfs.lvs.dao.domain.lvsEvntReport.vo;
 
 
+import com.abs.wfs.lvs.dao.domain.lvsEvntReport.model.WhLvsEventReport;
 import com.abs.wfs.lvs.dao.domain.lvsEvntReport.model.WnLvsEventReport;
 import com.abs.wfs.lvs.util.vo.EventStreamVo;
 import com.abs.wfs.lvs.util.vo.UseStatCd;
@@ -14,8 +15,9 @@ import java.time.Instant;
 
 @NoArgsConstructor
 @Data
-public class WnLvsEventReportDto {
+public class WhLvsEventReportDto {
 
+    private String refObjId;
     private String trkId;
     private String siteId;
     private String lotId;
@@ -37,7 +39,8 @@ public class WnLvsEventReportDto {
     private Timestamp mdfyDt; // NOT NULL ENABLE
 
 
-    public WnLvsEventReportDto(String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt, Timestamp scenEndDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt) {
+    public WhLvsEventReportDto(String refObjId, String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt, Timestamp scenEndDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt) {
+        this.refObjId = refObjId;
         this.trkId = trkId;
         this.siteId = siteId;
         this.lotId = lotId;
@@ -61,25 +64,35 @@ public class WnLvsEventReportDto {
 
     @Builder
 
-
-    public WnLvsEventReportDto(EventStreamVo vo){
-        this.trkId = vo.getMessageKey();
-        this.siteId = vo.getSiteId();
-        this.lotId = vo.getLotId();
-        this.eqpId = vo.getEqpId();
-        this.portId = vo.getPortId();
-        this.carrId = vo.getCarrId();
-        this.evntNm = vo.getCid();
-
-        this.crtUserId = vo.getUserId();
-        this.mdfyUserId = vo.getUserId();
-        this.crtDt = Timestamp.from(Instant.now());
-        this.mdfyDt = Timestamp.from(Instant.now());
+    public WhLvsEventReportDto(WnLvsEventReport report){
+        this.refObjId = report.getObjId();
+        this.trkId = report.getTrkId();
+        this.siteId = report.getSiteId();
+        this.lotId = report.getLotId();
+        this.eqpId = report.getEqpId();
+        this.portId = report.getPortId();
+        this.carrId = report.getCarrId();
+        this.evntNm = report.getEvntNm();
+        this.scenStartDt = report.getScenStartDt();
+        this.evntStartDt = report.getEvntStartDt();
+        this.evntEndDt = report.getEvntEndDt();
+        this.scenEndDt = report.getScenEndDt();
+        this.successYn = report.getSuccessYn();
+        this.useStatCd = report.getUseStatCd();
+        this.errCd = report.getErrCd();
+        this.errCm = report.getErrCm();
+        this.crtUserId = report.getCrtUserId();
+        this.crtDt = report.getCrtDt();
+        this.mdfyUserId = report.getMdfyUserId();
+        this.mdfyDt = report.getMdfyDt();
     }
 
 
-    public WnLvsEventReport toEntity(){
-        return WnLvsEventReport.builder()
+
+
+    public WhLvsEventReport toEntity(){
+        return WhLvsEventReport.builder()
+                .refObjId(refObjId)
                 .trkId(trkId)
                 .siteId(siteId)
                 .lotId(lotId)
