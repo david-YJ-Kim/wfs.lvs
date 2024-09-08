@@ -5,6 +5,7 @@ import com.abs.wfs.lvs.config.SolaceSessionConfiguration;
 import com.abs.wfs.lvs.intf.solace.InterfaceSolacePub;
 import com.abs.wfs.lvs.intf.solace.InterfaceSolaceSub;
 import com.abs.wfs.lvs.util.LvsDataStore;
+import com.abs.wfs.lvs.util.NonStoreKeyCleaner;
 import com.solacesystems.jcsmp.JCSMPException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class LvsApStartedActivator implements ApplicationRunner {
     private Environment env;
 
 
+    @Autowired
+    NonStoreKeyCleaner nonStoreKeyCleaner;
+
     @Override
     public void run(ApplicationArguments args){
 
@@ -28,6 +32,9 @@ public class LvsApStartedActivator implements ApplicationRunner {
         this.initializeSolaceResources();
         log.info("Complete initialize solace resources.");
 
+
+        log.info("Start Cleaner");
+        this.nonStoreKeyCleaner.executeTimer();
 
 
     }

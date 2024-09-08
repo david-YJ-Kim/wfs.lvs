@@ -32,6 +32,12 @@ public class LvsPropertyObject {
     @Value("${ap.storage.capa}")
     private String storageCapa;
 
+    @Value("${ap.polling.banKeyHr}")
+    private String pollingCleaner;
+
+    @Value("${ap.standard.cleanTimeHr}")
+    private String expiredLimitHr;
+
     @Value("${ap.interface.destination.receive.topic}")
     private String receiveTopicName;
     @Value("${ap.interface.destination.receive.queue}")

@@ -53,7 +53,16 @@ public class LvsLogStoreManager  {
      * event(message key) - log list map
      */
     ConcurrentHashMap<String, ArrayList<EventLogVo>> eventLogCollection = null;
-    
+
+
+    /**
+     * logNonStoreCollection: Log 적재를 막는 Collection
+     * key: messageKey / value: 등록된 시점
+     * ※ Cleaner Thread, 기준 시간 마다 돌아서, 해당 Collection 에 시간 초과된 항목들을 삭제
+     */
+    ConcurrentHashMap<String, Long> logNonStoreCollection = null;
+
+
     // TODO EvictingQueue 큐를 사용해서 메모리 사용량에 제한
     ArrayList<String> undefinedArray = null;
 
@@ -61,6 +70,7 @@ public class LvsLogStoreManager  {
     private void initializeDataStore(){
         this.eqpEventCollection = LvsDataStore.getInstance().getScenarioOngoingEqpMap();
         this.eventLogCollection = LvsDataStore.getInstance().getLogMessageMap();
+        this.logNonStoreCollection = LvsDataStore.getInstance().getLogNonStoreCollection();
         this.undefinedArray = LvsDataStore.getInstance().getUndefinedArray();
     }
 
@@ -83,25 +93,17 @@ public class LvsLogStoreManager  {
             this.initializeDataStore();
         }
 
-        // Store logs with message key
-        if(this.eventLogCollection.containsKey(vo.getMessageKey())){
-            this.eventLogCollection.get(vo.getMessageKey()).add(vo);
 
-        }else{
-            ArrayList logList = new ArrayList<>();
-            logList.add(vo);
-            this.eventLogCollection.put(vo.getMessageKey(), logList);
-
+        if(!logNonStoreCollection.containsKey(vo.getMessageKey())){
+            this.putEventWithLog(vo);
         }
-        log.info("key:{} stored in Log Map. size: {}", vo.getMessageKey(), LvsDataStore.getInstance().getLogMessageMap().size());
-
 
 
         /**
          * Set Scenario Key : eqpId
          */
 //        if(vo.getLogName().compareTo(LogNameConstant.ScenarioStartLog) == 0 ||
-        if(vo.getLogName().compareTo(LogNameConstant.RecvPayloadLog) == 0 ){
+        if(vo.getLogName().compareTo(LogNameConstant.ScenarioStartLog) == 0 ){
 
             // ArrayList<EventStreamVo> streamVoArrayList = null;
             // → EvictingQueue로 변경
@@ -112,6 +114,9 @@ public class LvsLogStoreManager  {
             if(eventStreamVo == null){
                 log.info("Fail to create EventStreamVo. Delete in EventLogCollection");
                 this.eventLogCollection.remove(vo.getMessageKey());
+                
+                // EventStreamVo를 생성하지 못한 LogVo로 추가적인 로그는 미 적재
+                this.logNonStoreCollection.put(vo.getMessageKey(), System.currentTimeMillis());
             }
 
             if(eventStreamVo.getEqpId() != null){
@@ -159,6 +164,25 @@ public class LvsLogStoreManager  {
 
     }
 
+
+    /**
+     *
+     * @param vo
+     */
+    private void putEventWithLog(EventLogVo vo){
+
+        // Store logs with message key
+        if(this.eventLogCollection.containsKey(vo.getMessageKey())){
+            this.eventLogCollection.get(vo.getMessageKey()).add(vo);
+
+        }else{
+            ArrayList logList = new ArrayList<>();
+            logList.add(vo);
+            this.eventLogCollection.put(vo.getMessageKey(), logList);
+
+        }
+        log.info("key:{} stored in Log Map. size: {}", vo.getMessageKey(), LvsDataStore.getInstance().getLogMessageMap().size());
+    }
 
     /**
      * Evicting Queue에 넘치게 add 되면 오래된 element는 삭제
@@ -272,14 +296,14 @@ public class LvsLogStoreManager  {
         for(String key : object.keySet()){
             if(key.contains(LvsConstant.tns.name()) && key.contains(LvsConstant.StartElement.name())){
                 for(String subKey : object.getJSONObject(key).keySet()){
-                    if(subKey.contains(LvsConstant.cid.name())){
-
-                        cid = object.getJSONObject(key).getString(subKey).trim();
-                    }
 
                     if(subKey.contains(LvsConstant.message.name()) && !subKey.contains(LvsConstant.messageKey.name())){
+
+                        JSONObject headJson = new JSONObject(object.getJSONObject(key).getString(subKey)).getJSONObject(LvsConstant.head.name());
                         JSONObject bodyJson = new JSONObject(object.getJSONObject(key).getString(subKey)).getJSONObject(LvsConstant.body.name());
 
+
+                        cid = headJson.getString(LvsConstant.cid.name()).trim();
                         if(this.judgeNonStoreEvent(cid, bodyJson)){
                             log.info("This EventLogVo is not necessary to store data. LogVo: {}.", vo.toString());
                             return null;
@@ -289,8 +313,6 @@ public class LvsLogStoreManager  {
                         portId = bodyJson.isNull(LvsConstant.portId.name()) ? "" : bodyJson.getString(LvsConstant.portId.name()).trim();
                         carrId = bodyJson.isNull(LvsConstant.carrId.name()) ? "" : bodyJson.getString(LvsConstant.carrId.name()).trim();
                         lotId = bodyJson.isNull(LvsConstant.lotId.name()) ? "" : bodyJson.getString(LvsConstant.lotId.name()).trim();
-
-
                     }
                 }
             }
@@ -321,9 +343,10 @@ public class LvsLogStoreManager  {
      */
     private boolean judgeNonStoreEvent(String cid, JSONObject bodyObj){
 
+        if(cid.isEmpty()) return false;
+
         switch (cid){
             case LvsBanMessageList.WFS_LOAD_REQ:
-
                 String evntCm = bodyObj.getString(LvsConstant.evntCm.name());
                 if(!evntCm.isEmpty()){
                     if(evntCm.contains("EMPTY PORT DETECTION")) {
