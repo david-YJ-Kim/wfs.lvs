@@ -46,4 +46,21 @@ public class EventStreamVo {
 
     private String logLevel;
 
+
+    @Override
+    public String toString() {
+        return "EventStreamVo{" +
+                "messageKey='" + messageKey + '\'' +
+                ", siteId='" + siteId + '\'' +
+                ", userId='" + userId + '\'' +
+                ", cid='" + cid + '\'' +
+                ", eqpId='" + eqpId + '\'' +
+                ", lotId='" + lotId + '\'' +
+                ", carrId='" + carrId + '\'' +
+                ", portId='" + portId + '\'' +
+                ", timestamp=" + timestamp +
+                ", formattedTime='" + formattedTime + '\'' +
+                ", logLevel='" + logLevel + '\'' +
+                '}';
+    }
 }

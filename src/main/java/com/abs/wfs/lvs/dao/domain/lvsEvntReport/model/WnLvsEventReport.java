@@ -36,6 +36,7 @@ public class WnLvsEventReport {
     private Timestamp evntStartDt;
     private Timestamp evntEndDt;
     private Timestamp scenEndDt;
+    private Timestamp clearMemoryDt;
 
     @Enumerated(EnumType.STRING)
     private UseYn successYn;
@@ -54,7 +55,8 @@ public class WnLvsEventReport {
 
 
     @Builder
-    public WnLvsEventReport(String objId, String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt, Timestamp scenEndDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt) {
+
+    public WnLvsEventReport(String objId, String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt, Timestamp scenEndDt, Timestamp clearMemoryDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt) {
         this.objId = objId;
         this.trkId = trkId;
         this.siteId = siteId;
@@ -67,6 +69,7 @@ public class WnLvsEventReport {
         this.evntStartDt = evntStartDt;
         this.evntEndDt = evntEndDt;
         this.scenEndDt = scenEndDt;
+        this.clearMemoryDt = clearMemoryDt;
         this.successYn = successYn;
         this.useStatCd = useStatCd;
         this.errCd = errCd;

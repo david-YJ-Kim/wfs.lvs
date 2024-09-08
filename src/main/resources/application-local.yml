@@ -45,6 +45,8 @@ spring:
 
 ##### Application Config ####
 ap:
+  storage:
+    capa: 100
   info:
     group: FIS
     site: SVM

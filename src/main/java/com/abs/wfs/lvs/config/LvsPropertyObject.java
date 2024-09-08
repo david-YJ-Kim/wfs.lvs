@@ -29,6 +29,9 @@ public class LvsPropertyObject {
     
     private String clientName;
 
+    @Value("${ap.storage.capa}")
+    private String storageCapa;
+
     @Value("${ap.interface.destination.receive.topic}")
     private String receiveTopicName;
     @Value("${ap.interface.destination.receive.queue}")

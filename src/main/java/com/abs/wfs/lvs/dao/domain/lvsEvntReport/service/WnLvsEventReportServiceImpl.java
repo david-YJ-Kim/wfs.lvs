@@ -32,7 +32,7 @@ public class WnLvsEventReportServiceImpl {
 
     public WnLvsEventReport searchEventReportWithEqpAndEvntNmAndTrkId(String trkId, String eqpId, String evntNm){
 
-        return this.wnLvsEventReportRepository.findByTrkIdAndEqpIdAndEntNmAndUseStatCd(trkId, eqpId, evntNm, UseStatCd.Usable);
+        return this.wnLvsEventReportRepository.findByTrkIdAndEqpIdAndEvntNmAndUseStatCd(trkId, eqpId, evntNm, UseStatCd.Usable);
 
     }
 

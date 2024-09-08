@@ -27,6 +27,7 @@ public class WnLvsEventReportDto {
     private Timestamp evntStartDt;
     private Timestamp evntEndDt;
     private Timestamp scenEndDt;
+    private Timestamp clearMemoryDt;
     private UseYn successYn;
     private UseStatCd useStatCd;
     private String errCd;
@@ -37,7 +38,7 @@ public class WnLvsEventReportDto {
     private Timestamp mdfyDt; // NOT NULL ENABLE
 
 
-    public WnLvsEventReportDto(String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt, Timestamp scenEndDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt) {
+    public WnLvsEventReportDto(String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt,Timestamp clearMemoryDt, Timestamp scenEndDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt) {
         this.trkId = trkId;
         this.siteId = siteId;
         this.lotId = lotId;
@@ -48,6 +49,7 @@ public class WnLvsEventReportDto {
         this.scenStartDt = scenStartDt;
         this.evntStartDt = evntStartDt;
         this.evntEndDt = evntEndDt;
+        this.clearMemoryDt = clearMemoryDt;
         this.scenEndDt = scenEndDt;
         this.successYn = successYn;
         this.useStatCd = useStatCd;
@@ -91,6 +93,7 @@ public class WnLvsEventReportDto {
                 .evntStartDt(evntStartDt)
                 .evntEndDt(evntEndDt)
                 .scenEndDt(scenEndDt)
+                .clearMemoryDt(clearMemoryDt)
                 .successYn(successYn)
                 .useStatCd(useStatCd)
                 .errCd(errCd)

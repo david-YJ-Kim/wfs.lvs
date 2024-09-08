@@ -3,12 +3,14 @@ package com.abs.wfs.lvs.service;
 import com.abs.wfs.lvs.util.LvsDataStore;
 import com.abs.wfs.lvs.util.vo.EventLogVo;
 import com.abs.wfs.lvs.util.vo.EventStreamVo;
+import com.google.common.collect.EvictingQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -18,7 +20,7 @@ public class LvsLogSearchManager {
     ConcurrentHashMap<String, ArrayList<EventLogVo>> logMap = LvsDataStore.getInstance().getLogMessageMap();
 
     // eqp,
-    ConcurrentHashMap<String, ArrayList<EventStreamVo>> scenarioMap = LvsDataStore.getInstance().getScenarioOngoingEqpMap();
+    ConcurrentHashMap<String, EvictingQueue<EventStreamVo>> scenarioMap = LvsDataStore.getInstance().getScenarioOngoingEqpMap();
 
     public String printLogMap(){
 
@@ -68,7 +70,7 @@ public class LvsLogSearchManager {
     public ArrayList getScenarioFlowWithEqpId(String eqpId){
 
 
-        return this.scenarioMap.get(eqpId);
+        return new ArrayList<>(this.scenarioMap.get(eqpId));
 
     }
 
@@ -79,7 +81,7 @@ public class LvsLogSearchManager {
 
     public void deleteLogByKey(String eqpId, String key){
         if(this.scenarioMap.containsKey(eqpId)){
-            ArrayList<EventStreamVo> keyList = this.scenarioMap.get(eqpId);
+            ArrayList<EventStreamVo> keyList = new ArrayList<>(this.scenarioMap.get(eqpId));
             keyList.remove(key);
         }
 

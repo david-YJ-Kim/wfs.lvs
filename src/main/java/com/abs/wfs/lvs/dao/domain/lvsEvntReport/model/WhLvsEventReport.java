@@ -37,6 +37,7 @@ public class WhLvsEventReport {
     private Timestamp evntStartDt;
     private Timestamp evntEndDt;
     private Timestamp scenEndDt;
+    private Timestamp clearMemoryDt;
 
     @Enumerated(EnumType.STRING)
     private UseYn successYn;
@@ -54,8 +55,9 @@ public class WhLvsEventReport {
     private Timestamp mdfyDt; // NOT NULL ENABLE
 
 
+
     @Builder
-    public WhLvsEventReport(String objId, String refObjId, String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt, Timestamp scenEndDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt) {
+    public WhLvsEventReport(String objId, String refObjId, String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt, Timestamp scenEndDt, Timestamp clearMemoryDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt) {
         this.objId = objId;
         this.refObjId = refObjId;
         this.trkId = trkId;
@@ -69,6 +71,7 @@ public class WhLvsEventReport {
         this.evntStartDt = evntStartDt;
         this.evntEndDt = evntEndDt;
         this.scenEndDt = scenEndDt;
+        this.clearMemoryDt = clearMemoryDt;
         this.successYn = successYn;
         this.useStatCd = useStatCd;
         this.errCd = errCd;

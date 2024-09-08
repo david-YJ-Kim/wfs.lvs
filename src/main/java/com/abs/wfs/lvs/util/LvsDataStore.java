@@ -2,6 +2,7 @@ package com.abs.wfs.lvs.util;
 
 import com.abs.wfs.lvs.util.vo.EventLogVo;
 import com.abs.wfs.lvs.util.vo.EventStreamVo;
+import com.google.common.collect.EvictingQueue;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class LvsDataStore {
     private LvsDataStore(){}
 
     // Key: eqp Id, value: [messageKey-A, messageKey-B] which is represent event name (cid).
-    private ConcurrentHashMap<String, ArrayList<EventStreamVo>> scenarioOngoingEqpMap;
+    private ConcurrentHashMap<String, EvictingQueue<EventStreamVo>> scenarioOngoingEqpMap;
 
     // key: messageKey-A, value: logs
     private ConcurrentHashMap<String, ArrayList<EventLogVo>> logMessageMap;
@@ -39,12 +40,12 @@ public class LvsDataStore {
         return logMessageMap;
     }
 
-    public ConcurrentHashMap<String, ArrayList<EventStreamVo>> getScenarioOngoingEqpMap() {
+    public ConcurrentHashMap<String, EvictingQueue<EventStreamVo>> getScenarioOngoingEqpMap() {
         return scenarioOngoingEqpMap;
     }
 
     private void initDataStore(){
-        instance.scenarioOngoingEqpMap = new ConcurrentHashMap<String, ArrayList<EventStreamVo>>();
+        instance.scenarioOngoingEqpMap = new ConcurrentHashMap<String, EvictingQueue<EventStreamVo>>();
         instance.logMessageMap = new ConcurrentHashMap<String, ArrayList<EventLogVo>>();
         instance.undefinedArray = new ArrayList<>();
 

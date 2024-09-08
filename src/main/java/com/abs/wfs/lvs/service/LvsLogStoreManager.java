@@ -1,5 +1,6 @@
 package com.abs.wfs.lvs.service;
 
+import com.abs.wfs.lvs.config.LvsPropertyObject;
 import com.abs.wfs.lvs.dao.domain.lvsEvntReport.model.WnLvsEventReport;
 import com.abs.wfs.lvs.dao.domain.lvsEvntReport.repository.WhLvsEventReportRepository;
 import com.abs.wfs.lvs.dao.domain.lvsEvntReport.repository.WnLvsEventReportRepository;
@@ -12,12 +13,15 @@ import com.abs.wfs.lvs.util.code.LvsConstant;
 import com.abs.wfs.lvs.util.vo.EventStreamVo;
 import com.abs.wfs.lvs.util.vo.EventLogVo;
 import com.abs.wfs.lvs.util.vo.UseYn;
+import com.google.common.collect.EvictingQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -40,9 +44,13 @@ public class LvsLogStoreManager  {
      * Scenario 여러 개의 event key로 구성된 이벤트 들의 흐름
      * EventLog는 하나의 event key로 발생한 여러 로그의 집합
      *
-     * Scenario map | key: eqp ID / value : log key list
+     * eqp - event(message key) list map | key: eqp ID / value : log key list
      */
-    ConcurrentHashMap<String, ArrayList<EventStreamVo>> eqpEventCollection = null;
+    ConcurrentHashMap<String, EvictingQueue<EventStreamVo>> eqpEventCollection = null;
+
+    /**
+     * event(message key) - log list map
+     */
     ConcurrentHashMap<String, ArrayList<EventLogVo>> eventLogCollection = null;
     
     // TODO EvictingQueue 큐를 사용해서 메모리 사용량에 제한
@@ -94,20 +102,23 @@ public class LvsLogStoreManager  {
         if(vo.getLogName().compareTo(LogNameConstant.ScenarioStartLog) == 0 ||
                 vo.getLogName().compareTo(LogNameConstant.RecvPayloadLog) == 0 ){
 
-            ArrayList<EventStreamVo> streamVoArrayList = null;
+            // ArrayList<EventStreamVo> streamVoArrayList = null;
+            // → EvictingQueue로 변경
+            EvictingQueue<EventStreamVo> eventStorage = null;
+            
             EventStreamVo eventStreamVo = this.generateEventStreamVo(vo);
 
 
             if(eventStreamVo.getEqpId() != null){
 
                 if(this.eqpEventCollection.containsKey(eventStreamVo.getEqpId())){
-                    streamVoArrayList = this.eqpEventCollection.get(eventStreamVo.getEqpId());
+                    eventStorage = this.eqpEventCollection.get(eventStreamVo.getEqpId());
 
                 }else{
-                    streamVoArrayList = new ArrayList<>();
+                    eventStorage = EvictingQueue.create(Integer.parseInt(LvsPropertyObject.getInstance().getStorageCapa()));
                 }
-                streamVoArrayList.add(eventStreamVo);
-                this.eqpEventCollection.put(eventStreamVo.getEqpId(), streamVoArrayList);
+                this.addIntoQueue(eventStorage, eventStreamVo);
+                this.eqpEventCollection.put(eventStreamVo.getEqpId(), eventStorage);
 
 
                 WnLvsEventReport insertedRecord = this.wnLvsEventReportService.insertNewEventRecord(vo.getLogName(), eventStreamVo);
@@ -141,7 +152,55 @@ public class LvsLogStoreManager  {
 
         }
 
+    }
 
+
+    /**
+     * Evicting Queue에 넘치게 add 되면 오래된 element는 삭제
+     * 삭제 대상 element를 조회해서 삭제 처리 로직 호출
+     * @param eventStorage
+     * @param vo
+     * @return
+     */
+    private boolean addIntoQueue(EvictingQueue<EventStreamVo> eventStorage, EventStreamVo vo){
+
+        if(eventStorage.size() == eventStorage.remainingCapacity()){
+            EventStreamVo evictedVo = eventStorage.peek();
+            if(evictedVo != null) this.onEviction(evictedVo);
+        }
+
+        return eventStorage.add(vo);
+        
+
+    }
+
+    /**
+     * 초과되어 삭제 대상 element를 eventLogCollection에서 삭제 필요
+     * @param removedVo
+     */
+    private void onEviction(EventStreamVo removedVo){
+
+        log.info("EventStreamVo is removed now. Gonna clear at eventLogCollection.  Removed EvenStreamVo: {}", removedVo.toString());
+        String messageKey = removedVo.getMessageKey();
+
+        if(eventLogCollection.containsKey(messageKey)){
+
+            int size = eventLogCollection.get(messageKey).size();
+            eventLogCollection.remove(messageKey);
+            log.info("EventLogCollection remove before size : {}, after size: {}", size, eventLogCollection.size());
+        }
+
+
+        WnLvsEventReport record = this.wnLvsEventReportService.findByTrkIdAndUseStatCd(messageKey);
+        if(record != null){
+            log.warn("Remain record at current table. Data will be deleted in memory. Tracing Key: {}, Record: {}",
+                    messageKey, record);
+
+            record.setClearMemoryDt(Timestamp.from(Instant.now()));
+
+            this.wnLvsEventReportRepository.save(record);
+
+        }
 
     }
 

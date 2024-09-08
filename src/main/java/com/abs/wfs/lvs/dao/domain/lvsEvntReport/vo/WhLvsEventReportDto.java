@@ -29,6 +29,7 @@ public class WhLvsEventReportDto {
     private Timestamp evntStartDt;
     private Timestamp evntEndDt;
     private Timestamp scenEndDt;
+    private Timestamp clearMemoryDt;
     private UseYn successYn;
     private UseStatCd useStatCd;
     private String errCd;
@@ -39,7 +40,7 @@ public class WhLvsEventReportDto {
     private Timestamp mdfyDt; // NOT NULL ENABLE
 
 
-    public WhLvsEventReportDto(String refObjId, String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt, Timestamp scenEndDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt) {
+    public WhLvsEventReportDto(String refObjId, String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt, Timestamp scenEndDt, Timestamp clearMemoryDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt) {
         this.refObjId = refObjId;
         this.trkId = trkId;
         this.siteId = siteId;
@@ -52,6 +53,7 @@ public class WhLvsEventReportDto {
         this.evntStartDt = evntStartDt;
         this.evntEndDt = evntEndDt;
         this.scenEndDt = scenEndDt;
+        this.clearMemoryDt = clearMemoryDt;
         this.successYn = successYn;
         this.useStatCd = useStatCd;
         this.errCd = errCd;
@@ -63,7 +65,6 @@ public class WhLvsEventReportDto {
     }
 
     @Builder
-
     public WhLvsEventReportDto(WnLvsEventReport report){
         this.refObjId = report.getObjId();
         this.trkId = report.getTrkId();
@@ -76,6 +77,7 @@ public class WhLvsEventReportDto {
         this.scenStartDt = report.getScenStartDt();
         this.evntStartDt = report.getEvntStartDt();
         this.evntEndDt = report.getEvntEndDt();
+        this.clearMemoryDt = report.getClearMemoryDt();
         this.scenEndDt = report.getScenEndDt();
         this.successYn = report.getSuccessYn();
         this.useStatCd = report.getUseStatCd();
