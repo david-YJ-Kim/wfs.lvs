@@ -15,14 +15,15 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity(name = "WN_LVS_EVENT_REPORT")
-public class WnLvsEventReport {
+@Entity(name = "WH_LVS_EVENT_REPORT")
+public class WhLvsEventReport {
 
     @Id
-    @GenericGenerator(name = "WN_LVS_EVENT_REPORT_SEQ_GENERATOR", strategy = "com.abs.wfs.lvs.util.ObjIdGenerator")
-    @GeneratedValue(generator = "WN_LVS_EVENT_REPORT_SEQ_GENERATOR")
+    @GenericGenerator(name = "WH_LVS_EVENT_REPORT_SEQ_GENERATOR", strategy = "com.abs.wfs.lvs.util.ObjIdGenerator")
+    @GeneratedValue(generator = "WH_LVS_EVENT_REPORT_SEQ_GENERATOR")
     @Column(name = "OBJ_ID")
     private String objId;
+    private String refObjId;
     private String trkId;
 
     private String siteId;
@@ -54,8 +55,9 @@ public class WnLvsEventReport {
 
 
     @Builder
-    public WnLvsEventReport(String objId, String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt, Timestamp scenEndDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt) {
+    public WhLvsEventReport(String objId, String refObjId, String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt, Timestamp scenEndDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt) {
         this.objId = objId;
+        this.refObjId = refObjId;
         this.trkId = trkId;
         this.siteId = siteId;
         this.lotId = lotId;

@@ -17,4 +17,12 @@ public interface WnLvsEventReportRepository extends JpaRepository<WnLvsEventRepo
      */
     WnLvsEventReport findByTrkIdAndEqpIdAndEntNmAndUseStatCd(String trkId, String eqpId, String evntNm, UseStatCd useStatCd);
 
+
+    /**
+     * 현행 테이블 로그 업데이트를 위해 사용
+     * @param trkId
+     * @param useStatCd
+     * @return
+     */
+    WnLvsEventReport findByTrkIdAndUseStatCd(String trkId, UseStatCd useStatCd);
 }
