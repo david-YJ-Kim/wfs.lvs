@@ -44,6 +44,10 @@ public enum LvsConstant {
     portId,
     carrId,
     lotId,
-    messageKey
+    messageKey,
+
+    evntCm,
+    rsltCm
+
     ;
 }

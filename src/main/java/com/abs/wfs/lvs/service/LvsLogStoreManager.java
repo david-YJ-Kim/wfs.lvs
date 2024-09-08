@@ -7,6 +7,7 @@ import com.abs.wfs.lvs.dao.domain.lvsEvntReport.repository.WnLvsEventReportRepos
 import com.abs.wfs.lvs.dao.domain.lvsEvntReport.service.WnLvsEventReportServiceImpl;
 import com.abs.wfs.lvs.dao.domain.lvsEvntReport.vo.WhLvsEventReportDto;
 import com.abs.wfs.lvs.util.CommonDate;
+import com.abs.wfs.lvs.util.LvsBanMessageList;
 import com.abs.wfs.lvs.util.LvsDataStore;
 import com.abs.wfs.lvs.util.code.LogNameConstant;
 import com.abs.wfs.lvs.util.code.LvsConstant;
@@ -99,15 +100,19 @@ public class LvsLogStoreManager  {
         /**
          * Set Scenario Key : eqpId
          */
-        if(vo.getLogName().compareTo(LogNameConstant.ScenarioStartLog) == 0 ||
-                vo.getLogName().compareTo(LogNameConstant.RecvPayloadLog) == 0 ){
+//        if(vo.getLogName().compareTo(LogNameConstant.ScenarioStartLog) == 0 ||
+        if(vo.getLogName().compareTo(LogNameConstant.RecvPayloadLog) == 0 ){
 
             // ArrayList<EventStreamVo> streamVoArrayList = null;
             // → EvictingQueue로 변경
             EvictingQueue<EventStreamVo> eventStorage = null;
-            
+
             EventStreamVo eventStreamVo = this.generateEventStreamVo(vo);
 
+            if(eventStreamVo == null){
+                log.info("Fail to create EventStreamVo. Delete in EventLogCollection");
+                this.eventLogCollection.remove(vo.getMessageKey());
+            }
 
             if(eventStreamVo.getEqpId() != null){
 
@@ -130,11 +135,11 @@ public class LvsLogStoreManager  {
                 log.error("Eqp id is null. EventStreamVo: {}", eventStreamVo.toString());
             }
 
-
         }
 
-        WnLvsEventReport updateRecord = this.wnLvsEventReportService.updateLogTimeEventRecord(vo.getLogName(), vo);
 
+
+        WnLvsEventReport updateRecord = this.wnLvsEventReportService.updateLogTimeEventRecord(vo.getLogName(), vo);
 
         /**
          * 이벤트 처리 마무리
@@ -260,40 +265,89 @@ public class LvsLogStoreManager  {
         String eqpId = null;
         String portId= null;
         String carrId= null;
-        String lotId = null;
+        String lotId= null;
 
         JSONObject object = XML.toJSONObject(vo.getPayload());
 
-        try{
+        for(String key : object.keySet()){
+            if(key.contains(LvsConstant.tns.name()) && key.contains(LvsConstant.StartElement.name())){
+                for(String subKey : object.getJSONObject(key).keySet()){
+                    if(subKey.contains(LvsConstant.cid.name())){
 
-            JSONObject payloadObj = object.getJSONObject("JavaToXmlActivityOutput").getJSONObject("RequestVo");
-            JSONObject bodyObject = new JSONObject(payloadObj.getString("Payload")).getJSONObject("body");
+                        cid = object.getJSONObject(key).getString(subKey).trim();
+                    }
 
-            eqpId = bodyObject.isNull(LvsConstant.eqpId.name()) ? "" : bodyObject.getString(LvsConstant.eqpId.name()).trim();
-            portId = bodyObject.isNull(LvsConstant.portId.name()) ? "" : bodyObject.getString(LvsConstant.portId.name()).trim();
-            carrId = bodyObject.isNull(LvsConstant.carrId.name()) ? "" : bodyObject.getString(LvsConstant.carrId.name()).trim();
-            lotId = bodyObject.isNull(LvsConstant.lotId.name()) ? "" : bodyObject.getString(LvsConstant.lotId.name()).trim();
+                    if(subKey.contains(LvsConstant.message.name()) && !subKey.contains(LvsConstant.messageKey.name())){
+                        JSONObject bodyJson = new JSONObject(object.getJSONObject(key).getString(subKey)).getJSONObject(LvsConstant.body.name());
 
-        }catch (Exception e){
-            e.printStackTrace();
+                        if(this.judgeNonStoreEvent(cid, bodyJson)){
+                            log.info("This EventLogVo is not necessary to store data. LogVo: {}.", vo.toString());
+                            return null;
+                        }
+
+                        eqpId = bodyJson.isNull(LvsConstant.eqpId.name()) ? "" : bodyJson.getString(LvsConstant.eqpId.name()).trim();
+                        portId = bodyJson.isNull(LvsConstant.portId.name()) ? "" : bodyJson.getString(LvsConstant.portId.name()).trim();
+                        carrId = bodyJson.isNull(LvsConstant.carrId.name()) ? "" : bodyJson.getString(LvsConstant.carrId.name()).trim();
+                        lotId = bodyJson.isNull(LvsConstant.lotId.name()) ? "" : bodyJson.getString(LvsConstant.lotId.name()).trim();
+
+
+                    }
+                }
+            }
         }
-
-
-
 
         EventStreamVo eventStreamVo = EventStreamVo.builder()
                 .messageKey(vo.getMessageKey())
                 .cid(cid)
                 .eqpId(eqpId)
-                .lotId(lotId)
                 .carrId(carrId)
                 .portId(portId)
+                .lotId(lotId)
                 .timestamp(vo.getTimestamp())
                 .formattedTime(CommonDate.getTimeUI(vo.getTimestamp()))
                 .logLevel(vo.getLogLevel())
                 .build();
 
         return eventStreamVo;
+    }
+
+
+    /**
+     * If not need to store log in storage
+     * return true
+     * @param cid
+     * @param bodyObj
+     * @return
+     */
+    private boolean judgeNonStoreEvent(String cid, JSONObject bodyObj){
+
+        switch (cid){
+            case LvsBanMessageList.WFS_LOAD_REQ:
+
+                String evntCm = bodyObj.getString(LvsConstant.evntCm.name());
+                if(!evntCm.isEmpty()){
+                    if(evntCm.contains("EMPTY PORT DETECTION")) {
+                        log.info("Data is not gonna store. It's empty port detection. Cid: {} eventCm: {}", cid, evntCm);
+                        return true;
+                    }
+                }
+
+                break;
+
+            case LvsBanMessageList.WFS_DSP_WORK_REP:
+                String rsltCm = bodyObj.getString(LvsConstant.rsltCm.name());
+                if(!rsltCm.isEmpty()){
+                    if(rsltCm.contains("ERR CODE:25")) {
+                        log.info("Data is not gonna store. It's empty port detection. Cid: {} rsltCm: {}", cid, rsltCm);
+                        return true;
+                    }
+
+                }
+
+                break;
+        }
+
+        return false;
     }
 
 }
