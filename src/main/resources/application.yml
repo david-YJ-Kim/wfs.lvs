@@ -1,0 +1,111 @@
+property:
+  type: dev
+
+server:
+  port: 8080
+  shutdown: graceful
+
+
+logging:
+  level:
+    org:
+      springframework:
+        jdbc:
+          core:
+            JdbcTemplate : debug
+#    '[org.springframework]': debug
+#    '[org.springframework.web]': debug
+
+
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-request-size: 45MB
+      max-file-size: 15MB
+  datasource:
+    #oracle
+    #    driver-class-name: oracle.jdbc.OracleDriver
+    #    url: jdbc:oracle:thin:@dev-mes-oracle.ctj5pd0b3rdj.us-east-1.rds.amazonaws.com:1522:ORCL
+    #    username: mesadm
+    #    password: absolics12#
+
+    ## 로깅
+    #driver-class-name: oracle.jdbc.OracleDriver
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+
+    #    url: jdbc:oracle:thin:@localhost:1521:ORCL
+    #    url: jdbc:oracle:thin:@dev-mes-oracle.ctj5pd0b3rdj.us-east-1.rds.amazonaws.com:1522:ORCL
+    #url: jdbc:oracle:thin:@(DESCRIPTION=(LOAD_BALANCE=OFF)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=10.184.50.188)(PORT=1521)(ADDRESS=(PROTOCOL=TCP)(HOST=10.184.50.189)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=svmpdb.absolics.net)))
+
+    #    url: jdbc:log4jdbc:oracle:thin:@localhost:1521:ORCL
+    #    url: jdbc:log4jdbc:oracle:thin:@dev-mes-oracle.ctj5pd0b3rdj.us-east-1.rds.amazonaws.com:1522:ORCL
+    url: jdbc:log4jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=OFF)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=10.184.50.188)(PORT=1521))(ADDRESS=(PROTOCOL=TCP)(HOST=10.184.50.189)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=svmpdb.absolics.net)))
+
+    username: mesadm
+    #    password: 1234
+    password: absolics12#
+
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
+      connection-timeout: 3000 # HikariCP 커넥션 요청 후 대기하는 시간
+      validation-timeout: 1000  # HikariCP 에서 커넥션을 주기 전 DB 헬스체크 의 타임아웃 Connection.isValid()
+      idle-timeout: 30000 # 놀고있는 (idle) 커넥션이 자동 Close 되기 전 대기시간
+      max-lifetime: 60000 # 커넥션 풀에서 대기할 수 있는 커넥션의 최대 생명주기(시간)
+      auto-commit: true
+
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+          batch_size: 1000
+    show-sql: true
+    database-platform: org.hibernate.dialect.OracleDialect
+  transaction:
+    mode: jdbc
+
+##### Application Config ####
+ap:
+  storage:
+    capa: 100
+  info:
+    group: FIS
+    site: SVM
+    env: DEV
+    sequence: 1
+  worker:
+    pool-size:
+      core: 5
+      max: 50
+    capacity: 1000
+    name:
+      prefix: LVS-ASYNC-
+  interface:
+    solace:
+      host: 10.184.50.81:55555
+      vpn: MES_QA
+      client:
+        username: default
+        password: admin
+      connect:
+        trial-count: 2
+      reconnect:
+        trial-count: 20
+        per-host: 5
+    destination:
+      send:
+        topic:
+      receive:
+        topic: SVM/WFS/LOG/MON
+        queue:
+        init:
+  shutdown:
+    force:
+      timeout:
+        ms: 1000
+    polling:
+      interval:
+        ms: 10
