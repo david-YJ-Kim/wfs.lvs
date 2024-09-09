@@ -7,10 +7,12 @@ import com.abs.wfs.lvs.dao.domain.lvsEvntReport.repository.WnLvsEventReportRepos
 import com.abs.wfs.lvs.dao.domain.lvsEvntReport.service.WnLvsEventReportServiceImpl;
 import com.abs.wfs.lvs.dao.domain.lvsEvntReport.vo.WhLvsEventReportDto;
 import com.abs.wfs.lvs.util.CommonDate;
+import com.abs.wfs.lvs.util.LogContentParser;
 import com.abs.wfs.lvs.util.LvsBanMessageList;
 import com.abs.wfs.lvs.util.LvsDataStore;
 import com.abs.wfs.lvs.util.code.LogNameConstant;
 import com.abs.wfs.lvs.util.code.LvsConstant;
+import com.abs.wfs.lvs.util.vo.AbnormalStartLogVo;
 import com.abs.wfs.lvs.util.vo.EventStreamVo;
 import com.abs.wfs.lvs.util.vo.EventLogVo;
 import com.abs.wfs.lvs.util.vo.UseYn;
@@ -39,6 +41,9 @@ public class LvsLogStoreManager  {
 
     @Autowired
     WhLvsEventReportRepository whLvsEventReportRepository;
+
+    @Autowired
+    LogContentParser logContentParser;
 
 
     /**
@@ -155,7 +160,7 @@ public class LvsLogStoreManager  {
             WnLvsEventReport crntRecord = this.wnLvsEventReportService.findByTrkIdAndUseStatCd(vo.getMessageKey());
 
             if(crntRecord != null){
-                this.endEventStream(vo.getLogName(), crntRecord);
+                this.endEventStream(vo, crntRecord);
             }else {
                 log.error("Current record is not defined. messageKey : {}, logName: {}", vo.getMessageKey(), vo.getLogName());
             }
@@ -242,13 +247,13 @@ public class LvsLogStoreManager  {
      * 2. 히스토리 테이블 적재
      * 3. 현행 테이블 삭제
      *
-     * @param logName
+     * @param logVo
      * @param record
      */
-    private void endEventStream(String logName, WnLvsEventReport record){
+    private void endEventStream(EventLogVo logVo, WnLvsEventReport record){
 
 
-        switch (logName){
+        switch (logVo.getLogName()){
             case LogNameConstant.ScenarioEndLog:
                 if(record.getSuccessYn().equals(UseYn.N)){
                     record.setSuccessYn(UseYn.Y);
@@ -258,9 +263,12 @@ public class LvsLogStoreManager  {
             case LogNameConstant.AbnormalStartLog:
                 record.setSuccessYn(UseYn.N);
 
-                // TODO 에러 내용 추출해서 업데이트
-                record.setErrCd("ERROR_CODE");
-                record.setErrCm("ERROR COMMENT");
+                AbnormalStartLogVo abnormalStartLogVo = this.logContentParser.generateAbnormalStartLogVo(logVo);
+                if(abnormalStartLogVo != null){
+
+                    record.setErrCd(abnormalStartLogVo.getErrCd());
+                    record.setErrCm(abnormalStartLogVo.getErrCm());
+                }
                 break;
         }
 
