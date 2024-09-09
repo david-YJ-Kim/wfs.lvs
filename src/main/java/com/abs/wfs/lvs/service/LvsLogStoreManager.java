@@ -94,14 +94,15 @@ public class LvsLogStoreManager  {
     public void execute(EventLogVo vo){
         log.info(vo.toString());
 
-        if(this.eqpEventCollection == null || this.eqpEventCollection == null){
+        if(this.eqpEventCollection == null){
             this.initializeDataStore();
         }
 
 
-        if(!logNonStoreCollection.containsKey(vo.getMessageKey())){
-            this.putEventWithLog(vo);
+        if(logNonStoreCollection.containsKey(vo.getMessageKey())){
+            log.debug("Log is no need to store in memory. LogVo: {}", vo);
         }
+        this.putEventWithLog(vo);
 
 
         /**
@@ -118,10 +119,7 @@ public class LvsLogStoreManager  {
 
             if(eventStreamVo == null){
                 log.info("Fail to create EventStreamVo. Delete in EventLogCollection");
-                this.eventLogCollection.remove(vo.getMessageKey());
-                
-                // EventStreamVo를 생성하지 못한 LogVo로 추가적인 로그는 미 적재
-                this.logNonStoreCollection.put(vo.getMessageKey(), System.currentTimeMillis());
+                this.deleteLogAndBanForward(vo);
             }
 
             if(eventStreamVo.getEqpId() != null){
@@ -143,6 +141,7 @@ public class LvsLogStoreManager  {
 
             }else{
                 log.error("Eqp id is null. EventStreamVo: {}", eventStreamVo.toString());
+                this.deleteLogAndBanForward(vo);
             }
 
         }
@@ -171,7 +170,20 @@ public class LvsLogStoreManager  {
 
 
     /**
-     *
+     * Storage 저장된 LogVo 삭제 후, 동일한 Key 로 발생하는 향후 로그로 저장 방지
+     * @param vo
+     */
+    private void deleteLogAndBanForward(EventLogVo vo){
+        this.eventLogCollection.remove(vo.getMessageKey());
+
+        // EventStreamVo를 생성하지 못한 LogVo로 추가적인 로그는 미 적재
+        this.logNonStoreCollection.put(vo.getMessageKey(), System.currentTimeMillis());
+        log.info("LogVo is removed from storage and no more log stored with same messageKey. LogVo: {}", vo);
+    }
+    
+    
+    /**
+     * LogVo를 Storage 저장
      * @param vo
      */
     private void putEventWithLog(EventLogVo vo){
