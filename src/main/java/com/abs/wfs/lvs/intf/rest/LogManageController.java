@@ -2,6 +2,8 @@ package com.abs.wfs.lvs.intf.rest;
 
 import com.abs.wfs.lvs.service.LvsLogSearchManager;
 import com.abs.wfs.lvs.service.LvsLogStoreManager;
+import com.abs.wfs.lvs.util.LogContentParser;
+import com.abs.wfs.lvs.util.vo.AbnormalStartLogVo;
 import com.abs.wfs.lvs.util.vo.EventLogVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,17 @@ public class LogManageController {
     public void postLogVo(@RequestBody EventLogVo vo){
 
         this.lvsLogStoreManager.execute(vo);
+
+    }
+
+
+    @Autowired
+    LogContentParser logContentParser;
+
+    @RequestMapping(value = "/insert/log/abnormal", method = RequestMethod.POST)
+    public AbnormalStartLogVo postAbnormalLogVo(@RequestBody EventLogVo vo){
+
+        return this.logContentParser.generateAbnormalStartLogVo(vo);
 
     }
 

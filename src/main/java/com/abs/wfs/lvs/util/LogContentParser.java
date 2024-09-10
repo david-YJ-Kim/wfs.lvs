@@ -3,7 +3,6 @@ package com.abs.wfs.lvs.util;
 import com.abs.wfs.lvs.util.code.LvsConstant;
 import com.abs.wfs.lvs.util.vo.AbnormalStartLogVo;
 import com.abs.wfs.lvs.util.vo.EventLogVo;
-import com.abs.wfs.lvs.util.vo.EventStreamVo;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.json.XML;
@@ -22,26 +21,29 @@ public class LogContentParser {
      */
     public AbnormalStartLogVo generateAbnormalStartLogVo(EventLogVo vo){
 
+        String errCd = null;
+        String errCm = null;
 
         JSONObject object = XML.toJSONObject(vo.getPayload());
         for(String key : object.keySet()){
-            if(key.contains(LvsConstant.tns.name()) && key.contains(LvsConstant.StartElement.name())) {
-                for (String subKey : object.getJSONObject(key).keySet()) {
-                    if (subKey.contains(LvsConstant.message.name()) && !subKey.contains(LvsConstant.messageKey.name())) {
+            log.info(key);
+            if(key.contains(LvsConstant.tns.name()) && key.contains(LvsConstant.ErrorElement.name())) {
 
-                        
-                        // TODO Parsing 완료
-                        JSONObject bodyJson = new JSONObject(object.getJSONObject(key).getString(subKey)).getJSONObject(LvsConstant.body.name());
-                        String errCd = "Get From Parsing Data";
-                        String errCm = "Get From Parsing Data";
+                JSONObject errorElement = object.getJSONObject(key);
+                for(String eleKey : errorElement.keySet()){
+                    if(eleKey.contains(LvsConstant.errCd.name())) {
+                        errCd = errorElement.getString(eleKey);
+                    }
 
-
-                        return AbnormalStartLogVo.builder()
-                                .errCd(errCd)
-                                .errCm(errCm)
-                                .build();
+                    if(eleKey.contains(LvsConstant.errCm.name())){
+                        errCm = errorElement.getString(eleKey);
                     }
                 }
+
+                return AbnormalStartLogVo.builder()
+                        .errCd(errCd)
+                        .errCm(errCm)
+                        .build();
             }
         }
 

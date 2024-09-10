@@ -10,4 +10,5 @@ public class LogNameConstant {
     public final static String EventEndLog = "EventEndLog";
     public final static String ProcessEqpIdLog ="ProcessEqpIdLog";
     public final static String AbnormalStartLog ="AbnormalStartLog";
+    public final static String UndefinedExceptionLog ="UndefinedExceptionLog";
 }

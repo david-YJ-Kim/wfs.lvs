@@ -92,10 +92,6 @@ public class WnLvsEventReportServiceImpl {
 
             // When other log is coming
             switch (vo.getLogName()){
-                case LogNameConstant.ScenarioStartLog:
-                    crntEvntRecord.setScenStartDt(Timestamp.from(Instant.now()));
-                    break;
-
                 case LogNameConstant.EventStartLog:
                     crntEvntRecord.setEvntStartDt(Timestamp.from(Instant.now()));
                     break;

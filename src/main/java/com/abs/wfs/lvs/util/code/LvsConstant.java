@@ -40,11 +40,15 @@ public enum LvsConstant {
     classTrace,
     tns,
     StartElement,
+    ErrorElement,
     message,
     portId,
     carrId,
     lotId,
     messageKey,
+
+    errCd,
+    errCm,
 
     evntCm,
     rsltCm

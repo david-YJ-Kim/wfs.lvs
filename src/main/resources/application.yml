@@ -93,7 +93,9 @@ ap:
   interface:
     solace:
       host: 10.184.50.81:55555
+#      host: localhost:55555
       vpn: MES_QA
+#      vpn: default
       client:
         username: default
         password: admin

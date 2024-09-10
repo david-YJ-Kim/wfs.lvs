@@ -1,6 +1,7 @@
 package com.abs.wfs.lvs.service;
 
 import com.abs.wfs.lvs.config.LvsPropertyObject;
+import com.abs.wfs.lvs.dao.domain.lvsEvntReport.model.WhLvsEventReport;
 import com.abs.wfs.lvs.dao.domain.lvsEvntReport.model.WnLvsEventReport;
 import com.abs.wfs.lvs.dao.domain.lvsEvntReport.repository.WhLvsEventReportRepository;
 import com.abs.wfs.lvs.dao.domain.lvsEvntReport.repository.WnLvsEventReportRepository;
@@ -112,6 +113,7 @@ public class LvsLogStoreManager  {
 
         if(logNonStoreCollection.containsKey(vo.getMessageKey())){
             log.debug("Log is no need to store in memory. LogVo: {}", vo);
+            return;
         }
         this.putEventWithLog(vo);
 
@@ -259,6 +261,10 @@ public class LvsLogStoreManager  {
     }
 
 
+    // Json 포맷으로 Pretty print 활성화 하기 위함
+    ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+
+
     /**
      * 종료를 알리는 로그에 대한 처리 방안
      * 종료 타입: 정상 종료 / 비정상 종료
@@ -272,7 +278,6 @@ public class LvsLogStoreManager  {
      */
     private void endEventStream(EventLogVo logVo, WnLvsEventReport record){
 
-
         switch (logVo.getLogName()){
             case LogNameConstant.ScenarioEndLog:
                 if(record.getSuccessYn().equals(UseYn.N)){
@@ -282,13 +287,17 @@ public class LvsLogStoreManager  {
 
             case LogNameConstant.AbnormalStartLog:
                 record.setSuccessYn(UseYn.N);
-
                 AbnormalStartLogVo abnormalStartLogVo = this.logContentParser.generateAbnormalStartLogVo(logVo);
                 if(abnormalStartLogVo != null){
 
                     record.setErrCd(abnormalStartLogVo.getErrCd());
                     record.setErrCm(abnormalStartLogVo.getErrCm());
                 }
+                break;
+
+            case LogNameConstant.UndefinedExceptionLog:
+                record.setSuccessYn(UseYn.N);
+                record.setErrCd(LogNameConstant.UndefinedExceptionLog);
                 break;
         }
 
@@ -300,11 +309,30 @@ public class LvsLogStoreManager  {
         this.wnLvsEventReportRepository.delete(latestRecord);
 
 
+        
+        // TODO Elastic 에 적재
+        // Update All Logs Json store in column
+//        log.debug("Get all log stream. LogStream: {}", this.eventLogCollection.get(logVo.getMessageKey()));
+
+//;        ArrayList<EventLogVo> logVoList = this.eventLogCollection.get(logVo.getMessageKey());
+//        String formattedLogVo = null;
+//        if(!logVoList.isEmpty()){
+//
+//                formattedLogVo = logVoList.toString();
+//            try{
+//                formattedLogVo = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(logVoList);
+//            }catch (Exception e){
+//            }
+//        }
+//        record.setLogStream(formattedLogVo);
+//        record.setLogStream("formattedLogVo");
+//        log.info(formattedLogVo);
+
+
+
+
     }
 
-
-    // Json 포맷으로 Pretty print 활성화 하기 위함
-    ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
 
     /**
