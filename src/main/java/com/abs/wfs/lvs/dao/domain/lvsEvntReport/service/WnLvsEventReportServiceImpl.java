@@ -70,16 +70,6 @@ public class WnLvsEventReportServiceImpl {
             WnLvsEventReport createdRecord = this.wnLvsEventReportRepository.save(wnLvsEventReportDto.toEntity());
 
             return createdRecord;
-        }else {
-
-            // 존재해서 있다면, 업데이트 (logName = 'scenarioStartLog' 시)
-            if(logName.compareTo(LogNameConstant.ScenarioStartLog) == 0){
-
-                crntRecord.setScenStartDt(Timestamp.from(Instant.now()));
-                WnLvsEventReport updatededRecord = this.wnLvsEventReportRepository.save(crntRecord);
-
-                return updatededRecord;
-            }
         }
         return null;
     }
@@ -87,11 +77,10 @@ public class WnLvsEventReportServiceImpl {
 
     /**
      * LVS 로그 테이블에 보고된 로그 내용 업데이트
-     * @param logName
      * @param vo
      * @return
      */
-    public WnLvsEventReport updateLogTimeEventRecord(String logName, EventLogVo vo){
+    public WnLvsEventReport updateLogTimeEventRecord(EventLogVo vo){
 
         // 데이터 조회
         String trkId = vo.getMessageKey();
@@ -119,6 +108,8 @@ public class WnLvsEventReportServiceImpl {
                     crntEvntRecord.setScenEndDt(Timestamp.from(Instant.now()));
                     crntEvntRecord.setSuccessYn(UseYn.Y);
                     break;
+                default:
+                    return null;
             }
             crntEvntRecord.setMdfyDt(Timestamp.from(Instant.now()));
 

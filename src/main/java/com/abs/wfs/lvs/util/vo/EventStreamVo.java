@@ -46,6 +46,8 @@ public class EventStreamVo {
 
     private String logLevel;
 
+    private String payload;
+
 
     @Override
     public String toString() {
@@ -61,6 +63,7 @@ public class EventStreamVo {
                 ", timestamp=" + timestamp +
                 ", formattedTime='" + formattedTime + '\'' +
                 ", logLevel='" + logLevel + '\'' +
+                ", payload='" + payload + '\'' +
                 '}';
     }
 }

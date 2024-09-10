@@ -38,9 +38,11 @@ public class WhLvsEventReportDto {
     private Timestamp crtDt;
     private String mdfyUserId;
     private Timestamp mdfyDt; // NOT NULL ENABLE
+    private String payload; // 수신한 payload
 
 
-    public WhLvsEventReportDto(String refObjId, String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt, Timestamp scenEndDt, Timestamp clearMemoryDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt) {
+    @Builder
+    public WhLvsEventReportDto(String refObjId, String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt, Timestamp scenEndDt, Timestamp clearMemoryDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt, String payload) {
         this.refObjId = refObjId;
         this.trkId = trkId;
         this.siteId = siteId;
@@ -62,9 +64,9 @@ public class WhLvsEventReportDto {
         this.crtDt = crtDt;
         this.mdfyUserId = mdfyUserId;
         this.mdfyDt = mdfyDt;
+        this.payload = payload;
     }
 
-    @Builder
     public WhLvsEventReportDto(WnLvsEventReport report){
         this.refObjId = report.getObjId();
         this.trkId = report.getTrkId();
@@ -87,6 +89,7 @@ public class WhLvsEventReportDto {
         this.crtDt = report.getCrtDt();
         this.mdfyUserId = report.getMdfyUserId();
         this.mdfyDt = report.getMdfyDt();
+        this.payload = report.getPayload();
     }
 
 
@@ -114,6 +117,7 @@ public class WhLvsEventReportDto {
                 .crtDt(crtDt)
                 .mdfyUserId(mdfyUserId)
                 .mdfyDt(mdfyDt)
+                .payload(payload)
                 .build();
     }
 }

@@ -1,0 +1,74 @@
+[
+  {
+    "messageKey": "1725910734935-9ac6a946-55e1-44bc-931f-8639023fcf67",
+    "logName": "RecvPayloadLog",
+    "timestamp": 1725910734937,
+    "logLevel": "DEBUG",
+    "threadName": "bwEngThread:In-Memory Process Worker-5",
+    "classTrace": "com.tibco.bw.palette.generalactivities.Log.workflow.RecvPayloadLog",
+    "payload": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><JavaToXmlActivityOutput xmlns=\"www.tibco.com/plugin/java/JavaToXmlActivityOutput+8066b587-0663-4070-a138-f275a1e5ff9c+JavaToXmlActivityOutput\"><RequestVo xmlns=\"www.tibco.com/plugin/java/xmlSchema/com.abs.workflow.RequestVo\"><CorelationId>corelationId</CorelationId><EventName>WFS_EQP_STATE_REPORT</EventName><MessageId>1725910734935-9ac6a946-55e1-44bc-931f-8639023fcf67</MessageId><Payload>{\"head\":{\"tgt\":\"WFS\",\"tgtEqp\":[],\"osrc\":\"\",\"srcEqp\":\"AP-RD-05-01\",\"src\":\"EAP\",\"tid\":\"AP-RD-05-01_00_20240909153854935\",\"cid\":\"WFS_EQP_STATE_REPORT\"},\"body\":{\"prevEqpCommStateCd\":\"Offline\",\"eqpStateCd\":\"Down\",\"siteId\":\"SVM\",\"eqpCommStateCd\":\"OnlineRemote\",\"prevEqpStateCd\":\"Idle\",\"eqpId\":\"AP-RD-05-01\",\"userId\":\"EAP\"}}</Payload></RequestVo></JavaToXmlActivityOutput>"
+  },
+  {
+    "messageKey": "1725910734935-9ac6a946-55e1-44bc-931f-8639023fcf67",
+    "logName": "ProcessEqpIdLog",
+    "timestamp": 1725910734945,
+    "logLevel": "INFO",
+    "threadName": "bwEngThread:In-Memory Process Worker-5",
+    "classTrace": "com.tibco.bw.palette.generalactivities.Log.workflow.ProcessEqpIdLog",
+    "payload": "AP-RD-05-01"
+  },
+  {
+    "messageKey": "1725910734935-9ac6a946-55e1-44bc-931f-8639023fcf67",
+    "logName": "ScenarioStartLog",
+    "timestamp": 1725910734948,
+    "logLevel": "INFO",
+    "threadName": "bwEngThread:In-Memory Process Worker-3",
+    "classTrace": "com.tibco.bw.palette.generalactivities.Log.workflow.ScenarioStartLog",
+    "payload": "\n<tns9:StartElement xmlns:tns8=\"http://tns.tibco.com/bw/activity/jsonparser/xsd/output\" xmlns:tns9=\"http://www.example.org/SystemLevelProcess\" xmlns:tns10=\"www.tibco.com/plugin/java/xmlSchema/com.abs.workflow.RequestVo\">\n    <tns9:cid>WFS_EQP_STATE_REPORT</tns9:cid>\n    <tns9:tid>AP-RD-05-01_00_20240909153854935</tns9:tid>\n    <tns9:src>EAP</tns9:src>\n    <tns9:scenarioType>COMMON</tns9:scenarioType>\n    <tns9:generatedtid>TID_20240909153854946264</tns9:generatedtid>\n    <tns9:message>{\"head\":{\"tgt\":\"WFS\",\"tgtEqp\":[],\"osrc\":\"\",\"srcEqp\":\"AP-RD-05-01\",\"src\":\"EAP\",\"tid\":\"AP-RD-05-01_00_20240909153854935\",\"cid\":\"WFS_EQP_STATE_REPORT\"},\"body\":{\"prevEqpCommStateCd\":\"Offline\",\"eqpStateCd\":\"Down\",\"siteId\":\"SVM\",\"eqpCommStateCd\":\"OnlineRemote\",\"prevEqpStateCd\":\"Idle\",\"eqpId\":\"AP-RD-05-01\",\"userId\":\"EAP\"}}</tns9:message>\n    <tns9:messageKey>1725910734935-9ac6a946-55e1-44bc-931f-8639023fcf67</tns9:messageKey>\n</tns9:StartElement>"
+  },
+  {
+    "messageKey": "1725910734935-9ac6a946-55e1-44bc-931f-8639023fcf67",
+    "logName": "EventStartLog",
+    "timestamp": 1725910734957,
+    "logLevel": "INFO",
+    "threadName": "bwEngThread:In-Memory Process Worker-3",
+    "classTrace": "com.tibco.bw.palette.generalactivities.Log.workflow.eap.EventStartLog",
+    "payload": "\n<tns1:StartElement xmlns:tns1=\"http://www.example.org/SystemLevelProcess\">\n    <tns1:cid>WFS_EQP_STATE_REPORT</tns1:cid>\n    <tns1:tid>AP-RD-05-01_00_20240909153854935</tns1:tid>\n    <tns1:src>EAP</tns1:src>\n    <tns1:scenarioType>COMMON</tns1:scenarioType>\n    <tns1:generatedtid>TID_20240909153854946264</tns1:generatedtid>\n    <tns1:message>{\"head\":{\"tgt\":\"WFS\",\"tgtEqp\":[],\"osrc\":\"\",\"srcEqp\":\"AP-RD-05-01\",\"src\":\"EAP\",\"tid\":\"AP-RD-05-01_00_20240909153854935\",\"cid\":\"WFS_EQP_STATE_REPORT\"},\"body\":{\"prevEqpCommStateCd\":\"Offline\",\"eqpStateCd\":\"Down\",\"siteId\":\"SVM\",\"eqpCommStateCd\":\"OnlineRemote\",\"prevEqpStateCd\":\"Idle\",\"eqpId\":\"AP-RD-05-01\",\"userId\":\"EAP\"}}</tns1:message>\n    <tns1:messageKey>1725910734935-9ac6a946-55e1-44bc-931f-8639023fcf67</tns1:messageKey>\n</tns1:StartElement>"
+  },
+  {
+    "messageKey": "1725910734935-9ac6a946-55e1-44bc-931f-8639023fcf67",
+    "logName": "ParsingResultLog",
+    "timestamp": 1725910734964,
+    "logLevel": "DEBUG",
+    "threadName": "bwEngThread:In-Memory Process Worker-3",
+    "classTrace": "com.tibco.bw.palette.generalactivities.Log.workflow.eap.ParsingResultLog",
+    "payload": "\n<EQP_STATE_REPORT xmlns=\"http://www.example.org/ScenarioSchema\">\n    <body>\n        <siteId>SVM</siteId>\n        <eqpId>AP-RD-05-01</eqpId>\n        <eqpStateCd>Down</eqpStateCd>\n        <userId>EAP</userId>\n    </body>\n</EQP_STATE_REPORT>"
+  },
+  {
+    "messageKey": "1725910734935-9ac6a946-55e1-44bc-931f-8639023fcf67",
+    "logName": "eqpStateCdCheck",
+    "timestamp": 1725910734967,
+    "logLevel": "INFO",
+    "threadName": "bwEngThread:In-Memory Process Worker-3",
+    "classTrace": "com.tibco.bw.palette.generalactivities.Log.workflow.eap.eqpStateCdCheck",
+    "payload": ""
+  },
+  {
+    "messageKey": "1725910734935-9ac6a946-55e1-44bc-931f-8639023fcf67",
+    "logName": "EventEndLog",
+    "timestamp": 1725910734968,
+    "logLevel": "INFO",
+    "threadName": "bwEngThread:In-Memory Process Worker-3",
+    "classTrace": "com.tibco.bw.palette.generalactivities.Log.workflow.eap.EventEndLog",
+    "payload": "Message : WFS_EQP_STATE_REPORT is complete."
+  },
+  {
+    "messageKey": "1725910734935-9ac6a946-55e1-44bc-931f-8639023fcf67",
+    "logName": "ScenarioEndLog",
+    "timestamp": 1725910734969,
+    "logLevel": "INFO",
+    "threadName": "bwEngThread:In-Memory Process Worker-3",
+    "classTrace": "com.tibco.bw.palette.generalactivities.Log.workflow.ScenarioEndLog",
+    "payload": "WFS_EQP_STATE_REPORT is complete."
+  }
+]

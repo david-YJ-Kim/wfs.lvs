@@ -65,6 +65,10 @@ public class LvsPropertyObject {
     @Value("${ap.worker.name.prefix}")
     private String threadPrefixName; // 생성되는 Thread 접두사 명
 
+    @Value("${ap.blockEventList}")
+    private String eventStoreBlockString; // 적재를 막는 이벤트 리스트 스트링 (,로 구분)
+
+
 
     // 프로세스에서 사용하는 룰 객체 
 //    private List<ParseRuleVo> parsingRule;

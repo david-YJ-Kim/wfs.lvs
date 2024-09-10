@@ -72,9 +72,10 @@ spring:
 ##### Application Config ####
 ap:
   standard:
-    cleanTimeHr: 0.1
+    cleanTimeHr: 1
   polling:
     banKeyHr: 1
+  blockEventList: WFS_OPERATOR_CHANGE_REPORT,WFS_ALARM_REPORT
   storage:
     capa: 100
   info:

@@ -36,9 +36,11 @@ public class WnLvsEventReportDto {
     private Timestamp crtDt;
     private String mdfyUserId;
     private Timestamp mdfyDt; // NOT NULL ENABLE
+    private String payload;
 
 
-    public WnLvsEventReportDto(String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt,Timestamp clearMemoryDt, Timestamp scenEndDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt) {
+    @Builder
+    public WnLvsEventReportDto(String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt,Timestamp clearMemoryDt, Timestamp scenEndDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt, String payload) {
         this.trkId = trkId;
         this.siteId = siteId;
         this.lotId = lotId;
@@ -59,9 +61,9 @@ public class WnLvsEventReportDto {
         this.crtDt = crtDt;
         this.mdfyUserId = mdfyUserId;
         this.mdfyDt = mdfyDt;
+        this.payload = payload;
     }
 
-    @Builder
 
 
     public WnLvsEventReportDto(EventStreamVo vo){
@@ -72,11 +74,13 @@ public class WnLvsEventReportDto {
         this.portId = vo.getPortId();
         this.carrId = vo.getCarrId();
         this.evntNm = vo.getCid();
-
+        this.scenStartDt = Timestamp.from(Instant.now());
         this.crtUserId = vo.getUserId();
         this.mdfyUserId = vo.getUserId();
+        this.useStatCd = UseStatCd.Usable;
         this.crtDt = Timestamp.from(Instant.now());
         this.mdfyDt = Timestamp.from(Instant.now());
+        this.payload = vo.getPayload();
     }
 
 
@@ -102,6 +106,7 @@ public class WnLvsEventReportDto {
                 .crtDt(crtDt)
                 .mdfyUserId(mdfyUserId)
                 .mdfyDt(mdfyDt)
+                .payload(payload)
                 .build();
     }
 }

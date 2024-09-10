@@ -53,10 +53,11 @@ public class WnLvsEventReport {
     private String mdfyUserId;
     private Timestamp mdfyDt; // NOT NULL ENABLE
 
+    private String payload; // 수신한 메시지 전문
+
 
     @Builder
-
-    public WnLvsEventReport(String objId, String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt, Timestamp scenEndDt, Timestamp clearMemoryDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt) {
+    public WnLvsEventReport(String objId, String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt, Timestamp scenEndDt, Timestamp clearMemoryDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt, String payload) {
         this.objId = objId;
         this.trkId = trkId;
         this.siteId = siteId;
@@ -78,5 +79,6 @@ public class WnLvsEventReport {
         this.crtDt = crtDt;
         this.mdfyUserId = mdfyUserId;
         this.mdfyDt = mdfyDt;
+        this.payload = payload;
     }
 }

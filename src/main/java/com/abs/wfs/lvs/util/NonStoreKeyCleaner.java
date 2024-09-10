@@ -17,8 +17,8 @@ import java.util.concurrent.TimeUnit;
 public class NonStoreKeyCleaner {
 
 
-    Long cleanerPollingIntervalHr = Long.valueOf(LvsPropertyObject.getInstance().getPollingCleaner());
-    Long expiredHrTimeStandard = Long.valueOf(LvsPropertyObject.getInstance().getExpiredLimitHr());
+    Long cleanerPollingIntervalHr = null;
+    Long expiredHrTimeStandard = null;
 
 
     ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -32,16 +32,28 @@ public class NonStoreKeyCleaner {
 
 
     public void executeTimer(){
+
+        if(cleanerPollingIntervalHr == null){
+            this.initializeDataStore();
+        }
+
         scheduler.scheduleAtFixedRate(() -> {
             Long currentTime = System.currentTimeMillis();
             log.info("Clean Timer is Start.currnet Timne: {}", currentTime);
             keyCleanTask(currentTime);
 
-        }, 0, cleanerPollingIntervalHr, TimeUnit.HOURS);
+
+            // TEST 10분 마다 실행
+        }, 0, 1, TimeUnit.MINUTES);
+
+//    }, 0, cleanerPollingIntervalHr, TimeUnit.HOURS);
     }
 
-    private void initializeDataStore(){
+    public void initializeDataStore(){
         this.logNonStoreCollection = LvsDataStore.getInstance().getLogNonStoreCollection();
+
+        this.cleanerPollingIntervalHr = Long.valueOf(LvsPropertyObject.getInstance().getPollingCleaner());
+        this.expiredHrTimeStandard = Long.valueOf(LvsPropertyObject.getInstance().getExpiredLimitHr());
     }
 
 
@@ -57,7 +69,13 @@ public class NonStoreKeyCleaner {
 
         for(String key : this.logNonStoreCollection.keySet()){
 
-            if(currentTime - this.logNonStoreCollection.get(key) >= TimeUnit.HOURS.toMillis(cleanerPollingIntervalHr)){
+//            if(currentTime - this.logNonStoreCollection.get(key) >= TimeUnit.HOURS.toMillis(expiredHrTimeStandard)){
+//                expiredKeys.add(key);
+//            }
+
+
+            // For Test, 10분 이상된 항목 삭제
+            if(currentTime - this.logNonStoreCollection.get(key) >= TimeUnit.MINUTES.toMillis(1)){
                 expiredKeys.add(key);
             }
         }

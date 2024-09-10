@@ -55,9 +55,10 @@ public class WhLvsEventReport {
     private Timestamp mdfyDt; // NOT NULL ENABLE
 
 
+    private String payload; // 수신한 메시지 전문
 
     @Builder
-    public WhLvsEventReport(String objId, String refObjId, String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt, Timestamp scenEndDt, Timestamp clearMemoryDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt) {
+    public WhLvsEventReport(String objId, String refObjId, String trkId, String siteId, String lotId, String eqpId, String portId, String carrId, String evntNm, Timestamp scenStartDt, Timestamp evntStartDt, Timestamp evntEndDt, Timestamp scenEndDt, Timestamp clearMemoryDt, UseYn successYn, UseStatCd useStatCd, String errCd, String errCm, String crtUserId, Timestamp crtDt, String mdfyUserId, Timestamp mdfyDt, String payload) {
         this.objId = objId;
         this.refObjId = refObjId;
         this.trkId = trkId;
@@ -80,5 +81,6 @@ public class WhLvsEventReport {
         this.crtDt = crtDt;
         this.mdfyUserId = mdfyUserId;
         this.mdfyDt = mdfyDt;
+        this.payload = payload;
     }
 }

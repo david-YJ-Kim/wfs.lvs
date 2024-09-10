@@ -34,6 +34,7 @@ public class LvsApStartedActivator implements ApplicationRunner {
 
 
         log.info("Start Cleaner");
+        this.nonStoreKeyCleaner.initializeDataStore();
         this.nonStoreKeyCleaner.executeTimer();
 
 

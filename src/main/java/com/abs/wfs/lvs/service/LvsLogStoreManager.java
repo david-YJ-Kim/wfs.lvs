@@ -16,6 +16,9 @@ import com.abs.wfs.lvs.util.vo.AbnormalStartLogVo;
 import com.abs.wfs.lvs.util.vo.EventStreamVo;
 import com.abs.wfs.lvs.util.vo.EventLogVo;
 import com.abs.wfs.lvs.util.vo.UseYn;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.collect.EvictingQueue;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
@@ -23,9 +26,11 @@ import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
@@ -68,6 +73,9 @@ public class LvsLogStoreManager  {
     ConcurrentHashMap<String, Long> logNonStoreCollection = null;
 
 
+    ArrayList<String> eventStoreBlockList = null;
+
+
     // TODO EvictingQueue 큐를 사용해서 메모리 사용량에 제한
     ArrayList<String> undefinedArray = null;
 
@@ -77,6 +85,9 @@ public class LvsLogStoreManager  {
         this.eventLogCollection = LvsDataStore.getInstance().getLogMessageMap();
         this.logNonStoreCollection = LvsDataStore.getInstance().getLogNonStoreCollection();
         this.undefinedArray = LvsDataStore.getInstance().getUndefinedArray();
+        this.eventStoreBlockList = new ArrayList<>(
+                Arrays.asList(LvsPropertyObject.getInstance().getEventStoreBlockString().split(","))
+        );
     }
 
     public void undefinedStore(String logPayload){
@@ -92,7 +103,7 @@ public class LvsLogStoreManager  {
      * @param vo
      */
     public void execute(EventLogVo vo){
-        log.info(vo.toString());
+        log.info("IncomingLog. {}",vo.toString());
 
         if(this.eqpEventCollection == null){
             this.initializeDataStore();
@@ -117,38 +128,35 @@ public class LvsLogStoreManager  {
 
             EventStreamVo eventStreamVo = this.generateEventStreamVo(vo);
 
-            if(eventStreamVo == null){
-                log.info("Fail to create EventStreamVo. Delete in EventLogCollection");
+            if(eventStreamVo == null || eventStreamVo.getEqpId() == null){
+                log.info("Fail to create EventStreamVo. or EqpId is null.  Delete in EventLogCollection");
                 this.deleteLogAndBanForward(vo);
             }
 
-            if(eventStreamVo.getEqpId() != null){
 
-                if(this.eqpEventCollection.containsKey(eventStreamVo.getEqpId())){
-                    eventStorage = this.eqpEventCollection.get(eventStreamVo.getEqpId());
-
-                }else{
-                    eventStorage = EvictingQueue.create(Integer.parseInt(LvsPropertyObject.getInstance().getStorageCapa()));
-                }
-                this.addIntoQueue(eventStorage, eventStreamVo);
-                this.eqpEventCollection.put(eventStreamVo.getEqpId(), eventStorage);
-
-
-                WnLvsEventReport insertedRecord = this.wnLvsEventReportService.insertNewEventRecord(vo.getLogName(), eventStreamVo);
-                if(insertedRecord != null){
-                    log.info("Success to insert || update record like this : {}", insertedRecord);
-                }
+            if(this.eqpEventCollection.containsKey(eventStreamVo.getEqpId())){
+                eventStorage = this.eqpEventCollection.get(eventStreamVo.getEqpId());
 
             }else{
-                log.error("Eqp id is null. EventStreamVo: {}", eventStreamVo.toString());
-                this.deleteLogAndBanForward(vo);
+                eventStorage = EvictingQueue.create(Integer.parseInt(LvsPropertyObject.getInstance().getStorageCapa()));
+            }
+            this.addIntoQueue(eventStorage, eventStreamVo);
+            this.eqpEventCollection.put(eventStreamVo.getEqpId(), eventStorage);
+
+
+            WnLvsEventReport insertedRecord = this.wnLvsEventReportService.insertNewEventRecord(vo.getLogName(), eventStreamVo);
+            if(insertedRecord != null){
+                log.info("Success to insert || update record like this : {}", insertedRecord);
             }
 
+
+        }else{
+
+            WnLvsEventReport updateRecord = this.wnLvsEventReportService.updateLogTimeEventRecord(vo);
         }
 
 
 
-        WnLvsEventReport updateRecord = this.wnLvsEventReportService.updateLogTimeEventRecord(vo.getLogName(), vo);
 
         /**
          * 이벤트 처리 마무리
@@ -295,6 +303,8 @@ public class LvsLogStoreManager  {
     }
 
 
+    // Json 포맷으로 Pretty print 활성화 하기 위함
+    ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 
 
     /**
@@ -302,7 +312,7 @@ public class LvsLogStoreManager  {
      * such as, cid, eqpId, portId, carrId
      * @param vo
      */
-    private EventStreamVo generateEventStreamVo(EventLogVo vo){
+    private EventStreamVo generateEventStreamVo(EventLogVo vo)  {
 
 
         String cid = null;
@@ -310,6 +320,7 @@ public class LvsLogStoreManager  {
         String portId= null;
         String carrId= null;
         String lotId= null;
+        String payload = null;
 
         JSONObject object = XML.toJSONObject(vo.getPayload());
 
@@ -319,8 +330,10 @@ public class LvsLogStoreManager  {
 
                     if(subKey.contains(LvsConstant.message.name()) && !subKey.contains(LvsConstant.messageKey.name())){
 
-                        JSONObject headJson = new JSONObject(object.getJSONObject(key).getString(subKey)).getJSONObject(LvsConstant.head.name());
-                        JSONObject bodyJson = new JSONObject(object.getJSONObject(key).getString(subKey)).getJSONObject(LvsConstant.body.name());
+                        payload = object.getJSONObject(key).getString(subKey);
+
+                        JSONObject headJson = new JSONObject(payload).getJSONObject(LvsConstant.head.name());
+                        JSONObject bodyJson = new JSONObject(payload).getJSONObject(LvsConstant.body.name());
 
 
                         cid = headJson.getString(LvsConstant.cid.name()).trim();
@@ -338,6 +351,7 @@ public class LvsLogStoreManager  {
             }
         }
 
+
         EventStreamVo eventStreamVo = EventStreamVo.builder()
                 .messageKey(vo.getMessageKey())
                 .cid(cid)
@@ -349,6 +363,16 @@ public class LvsLogStoreManager  {
                 .formattedTime(CommonDate.getTimeUI(vo.getTimestamp()))
                 .logLevel(vo.getLogLevel())
                 .build();
+
+
+        try {
+            eventStreamVo.setPayload(objectMapper.writeValueAsString(
+                    objectMapper.readValue(payload, Object.class)
+            ));
+        } catch (IOException e) {
+            eventStreamVo.setPayload(payload);
+        }
+
 
         return eventStreamVo;
     }
@@ -380,7 +404,7 @@ public class LvsLogStoreManager  {
             case LvsBanMessageList.WFS_DSP_WORK_REP:
                 String rsltCm = bodyObj.getString(LvsConstant.rsltCm.name());
                 if(!rsltCm.isEmpty()){
-                    if(rsltCm.contains("ERR CODE:25")) {
+                    if(rsltCm.contains("ERR CODE:25") || rsltCm.contains("FAIL: 42, 요청 설비에 예약된 SORTER JOB 없음")) {
                         log.info("Data is not gonna store. It's empty port detection. Cid: {} rsltCm: {}", cid, rsltCm);
                         return true;
                     }
@@ -388,6 +412,12 @@ public class LvsLogStoreManager  {
                 }
 
                 break;
+
+            default:
+                if(eventStoreBlockList.contains(cid)){
+                    log.info("Cid is no need to store. cid : {}", cid);
+                    return true;
+                }
         }
 
         return false;
