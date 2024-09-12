@@ -11,9 +11,10 @@
 
   <groupId>com.abs.wfs</groupId>
   <artifactId>lvs</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.1</version>
   <name>lvs</name>
   <description>Log View System</description>
+
   <properties>
     <java.version>8</java.version>
     <log4j2.version>2.17.1</log4j2.version>

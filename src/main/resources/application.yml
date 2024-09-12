@@ -1,5 +1,5 @@
 property:
-  type: dev
+  type: product
 
 server:
   port: 8080
@@ -41,8 +41,8 @@ spring:
 
     driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
     #url: jdbc:log4jdbc:oracle:thin:@localhost:1521:ORCL
-    url: jdbc:log4jdbc:oracle:thin:@dev-mes-oracle.ctj5pd0b3rdj.us-east-1.rds.amazonaws.com:1522:ORCL
-    #url: jdbc:log4jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=OFF)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=10.184.50.188)(PORT=1521))(ADDRESS=(PROTOCOL=TCP)(HOST=10.184.50.189)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=svmpdb.absolics.net)))
+    #url: jdbc:log4jdbc:oracle:thin:@dev-mes-oracle.ctj5pd0b3rdj.us-east-1.rds.amazonaws.com:1522:ORCL
+    url: jdbc:log4jdbc:oracle:thin:@(DESCRIPTION=(ADDRESS_LIST=(LOAD_BALANCE=OFF)(FAILOVER=ON)(ADDRESS=(PROTOCOL=TCP)(HOST=10.184.50.188)(PORT=1521))(ADDRESS=(PROTOCOL=TCP)(HOST=10.184.50.189)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=svmpdb.absolics.net)))
 
     username: mesadm
     password: absolics12#
@@ -79,9 +79,9 @@ ap:
   storage:
     capa: 100
   info:
-    group: FIS
+    group: LVS
     site: SVM
-    env: DEV
+    env: PROD
     sequence: 1
   worker:
     pool-size:
