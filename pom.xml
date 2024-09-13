@@ -19,6 +19,8 @@
     <java.version>8</java.version>
     <log4j2.version>2.17.1</log4j2.version>
   </properties>
+
+
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -107,15 +109,6 @@
       <artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
       <version>1.16</version>
     </dependency>
-
-<!--    &lt;!&ndash; DB Driver &ndash;&gt;-->
-<!--    &lt;!&ndash; https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc8 &ndash;&gt;-->
-<!--    <dependency>-->
-<!--      <groupId>com.oracle.database.jdbc</groupId>-->
-<!--      <artifactId>ojdbc8</artifactId>-->
-<!--      <version>12.2.0.1</version>-->
-<!--    </dependency>-->
-
 
 
     <!-- https://mvnrepository.com/artifact/org.json/json -->
